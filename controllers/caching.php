@@ -45,7 +45,7 @@
  * @link       http://www.clearfoundation.com/docs/developer/apps/web_proxy/
  */
 
-class Cache extends ClearOS_Controller
+class Caching extends ClearOS_Controller
 {
     /**
      * Web proxy cache overview.
@@ -98,7 +98,7 @@ class Cache extends ClearOS_Controller
                 // clearsync handles reload
 
                 $this->page->set_status_updated();
-                redirect('/web_proxy/cache');
+                redirect('/web_proxy/caching');
             } catch (Exception $e) {
                 $this->page->view_exception($e);
                 return;

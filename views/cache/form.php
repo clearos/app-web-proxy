@@ -48,7 +48,7 @@ if ($form_type === 'edit') {
 } else {
     $read_only = TRUE;
     $buttons = array(
-        anchor_edit('/app/web_proxy/cache/edit'),
+        anchor_edit('/app/web_proxy/caching/edit'),
     );
 //        anchor_javascript('reset_cache', lang('web_proxy_reset_cache'), 'high')
 }
@@ -57,7 +57,7 @@ if ($form_type === 'edit') {
 // Form open
 ///////////////////////////////////////////////////////////////////////////////
 
-echo form_open('web_proxy/cache/edit'); 
+echo form_open('web_proxy/caching/edit'); 
 echo form_header(lang('web_proxy_cache'));
 
 ///////////////////////////////////////////////////////////////////////////////

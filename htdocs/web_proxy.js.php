@@ -64,7 +64,7 @@ $(document).ready(function() {
 		$("#cache_status_text").html('<div class="theme-loading-normal">' + lang_resetting + '</div>');
 
 		$.ajax({
-			url: '/web_proxy/cache/reset',
+			url: '/web_proxy/caching/reset',
 			method: 'GET',
 			dataType: 'json',
 			success : function(payload) {
