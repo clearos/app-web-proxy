@@ -795,7 +795,7 @@ class Squid extends Daemon
         $lines .= "external_acl_type system_group %LOGIN $this->file_squid_unix_group -p\n";
         $lines .= "\n";
 
-        // FIXME - review
+        // TODO - review
         /*
         $lines .= "auth_param ntlm program /usr/bin/ntlm_auth --helper-protocol=squid-2.5-ntlmssp --require-membership-of=web_proxy_plugin\n";
         $lines .= "auth_param ntlm children $children\n";

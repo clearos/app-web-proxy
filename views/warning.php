@@ -40,7 +40,6 @@ $this->lang->load('network');
 // Form 
 ///////////////////////////////////////////////////////////////////////////////
 
-// FIXME: splash type page needs a logo!
 echo form_open('web_proxy/warning');
 echo form_header(lang('web_proxy_web_proxy'));
 

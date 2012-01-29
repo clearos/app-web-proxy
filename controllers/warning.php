@@ -73,13 +73,13 @@ class Warning extends ClearOS_Controller
         // Load view data
         //---------------
 
-// FIXME: validate
+        // FIXME: validate
         try {
-/*
+            /*
             $data['cache'] = $this->squid->get_cache_size();
             $data['object'] = $this->squid->get_maximum_object_size();
             $data['download'] = $this->squid->get_maximum_file_download_size();
-*/
+            */
         } catch (Exception $e) {
             $this->page->view_exception($e);
             return;
@@ -158,7 +158,7 @@ class Warning extends ClearOS_Controller
 
         $page['type'] = MY_Page::TYPE_SPLASH;
 
-        $this->page->view_form('web_proxy/configuration', $data, lang('base_warning'), $page);
+        $this->page->view_form('web_proxy/configuration', $data, lang('web_proxy_web_proxy_configuration'), $page);
     }
 
     /**

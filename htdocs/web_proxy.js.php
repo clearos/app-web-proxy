@@ -104,7 +104,7 @@ $(document).ready(function() {
                     else
                         status_class = 'alert'; 
 
-                    // FIXME: need a class to highlight bad/good state
+                    // TODO: need a class to highlight bad/good state
                     $("#status_text").html('<span class="' + status_class + '">' + payload.status_message + '</span>');
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {

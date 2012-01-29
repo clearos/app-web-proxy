@@ -1,6 +1,9 @@
 <?php
 
+$lang['web_proxy_please_disable_proxy_settings'] = 'Please disable proxy settings in your web browser.';
+
 $lang['web_proxy_group'] = 'Group';
+$lang['web_proxy_web_proxy_configuration'] = 'Web Proxy Configuration';
 
 $lang['web_proxy_clearing_the_cache'] = 'Clearing the cache.';
 $lang['web_proxy_ready'] = 'Ready';
