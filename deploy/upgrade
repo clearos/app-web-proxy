@@ -33,14 +33,3 @@ if [ -n "$CHECK" ]; then
     logger -p local6.notice -t installer "app-web-proxy-core - updating architecture to $LOG_LIB"
     sed -i -e "s/\/usr\/$WRONG_LIB/\/usr\/$CORRECT_LIB/" /etc/squid/squid_auth.conf
 fi
-
-
-# FIXME: move this to clearsync
-LINE=`grep "^Cmnd_Alias CLEARSYNC" /etc/sudoers 2>/dev/null`
-CHECK=`echo $LINE, | grep /usr/sbin/syncaction,`
-if [ -z "$CHECK" ]; then
-    ESCAPE=`echo /usr/sbin/syncaction | sed 's/\//\\\\\//g'`
-    sed -i -e "s/Cmnd_Alias CLEARSYNC.*=/Cmnd_Alias CLEARSYNC = $ESCAPE,/i" /etc/sudoers
-    sed -i -e "s/[[:space:]]*,[[:space:]]*$//i" /etc/sudoers
-    chmod 440 /etc/sudoers
-fi
