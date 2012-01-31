@@ -1,5 +1,10 @@
 <?php
 
+$lang['web_proxy_transparent_and_no_user_authentication'] = 'Transparent + No User Authentication';
+$lang['web_proxy_non_transparent_with_user_authentication'] = 'Non-Transparent + User Authentication';
+$lang['web_proxy_non_transaprent_Without_user_authentication'] = 'Non-Transparent + No User Authentication';
+$lang['web_proxy_mode'] = 'Mode';
+
 $lang['web_proxy_please_disable_proxy_settings'] = 'Please disable proxy settings in your web browser.';
 
 $lang['web_proxy_group'] = 'Group';
@@ -18,7 +23,7 @@ $lang['web_proxy_configuration_settings_warning:'] = 'Please enable the proxy se
 
 
 $lang['web_proxy_warning_message'] = 'Warning Message';
-$lang['web_proxy_app_description'] = 'A web proxy acts as an intermediary server for web requests originating from the Local Area Network.  Implementing a proxy server is optional, however, several benefits are gained such as increasing page access times (using caching), decreasing bandwidth use, logging website visits by user and/or IP and implementing access control restrictions.';
+$lang['web_proxy_app_description'] = 'A web proxy acts as an intermediary for web requests originating from your network.  Implementing the proxy server improves page access times, decreases bandwidth use, and provides site visit audits by user and IP address.';
 $lang['web_proxy_app_name'] = 'Web Proxy';
 $lang['web_proxy_transparent_mode'] = 'Transparent Mode';
 $lang['web_proxy_content_filter'] = 'Content Filter';

@@ -93,12 +93,11 @@ class Caching extends ClearOS_Controller
             try {
                 // Update
                 $this->squid->set_cache_size($this->input->post('cache'));
-                $this->squid->set_maximum_file_download_size($this->input->post('download'));
                 $this->squid->set_maximum_object_size($this->input->post('object'));
-                // clearsync handles reload
+                $this->squid->set_maximum_file_download_size($this->input->post('download'));
 
                 $this->page->set_status_updated();
-                redirect('/web_proxy/caching');
+                // redirect('/web_proxy/caching');
             } catch (Exception $e) {
                 $this->page->view_exception($e);
                 return;
@@ -122,7 +121,7 @@ class Caching extends ClearOS_Controller
         $lang_megabytes = lang('base_megabytes');
         $lang_gigabytes = lang('base_gigabytes');
 
-        $size_options = array(
+        $base_size_options = array(
             '1048576' => '1 ' . $lang_megabytes,
             '2097152' => '2 ' . $lang_megabytes,
             '3145728' => '3 ' . $lang_megabytes,
@@ -160,6 +159,9 @@ class Caching extends ClearOS_Controller
             '8589934592' => '8 ' . $lang_gigabytes,
             '9663676416' => '9 ' . $lang_gigabytes,
             '10737418240' => '10 ' . $lang_gigabytes,
+        );
+
+        $big_size_options = array(
             '21474836480' => '20 ' . $lang_gigabytes,
             '32212254720' => '30 ' . $lang_gigabytes,
             '42949672960' => '40 ' . $lang_gigabytes,
@@ -179,9 +181,10 @@ class Caching extends ClearOS_Controller
             '966367641600' => '900 ' . $lang_gigabytes,
         );
 
-        $data['cache_options'] = $size_options;
-        $data['object_options'] = $size_options;
-        $data['download_options'] = $size_options;
+        //$data['cache_options'] = array_merge($base_size_options, $big_size_options);
+        $data['cache_options'] = $base_size_options;
+        $data['object_options'] = $base_size_options;
+        $data['download_options'] = $base_size_options;
         $data['download_options']['none'] = lang('base_unlimited');
  
         // Load views

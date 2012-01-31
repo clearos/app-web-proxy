@@ -91,9 +91,22 @@ class Settings extends ClearOS_Controller
 
         if ($this->input->post('submit')) {
             try {
-                $this->squid_firewall->set_proxy_transparent_state($this->input->post('transparent'));
-                $this->squid->set_user_authentication_state($this->input->post('user_authentication'));
-                // clearsync handles reload
+
+                if ($this->input->post('mode')) {
+                    $mode = $this->input->post('mode');
+                    if ($mode == 1) {
+                        $this->squid_firewall->set_proxy_transparent_state(TRUE);
+                        $this->squid->set_user_authentication_state(FALSE);
+                    } else if ($mode == 2) {
+                        $this->squid_firewall->set_proxy_transparent_state(FALSE);
+                        $this->squid->set_user_authentication_state(TRUE);
+                    } else if ($mode == 3) {
+                        $this->squid_firewall->set_proxy_transparent_state(FALSE);
+                        $this->squid->set_user_authentication_state(FALSE);
+                    }
+                } else {
+                    $this->squid->set_user_authentication_state($this->input->post('user_authentication'));
+                }
 
                 $this->page->set_status_updated();
                 redirect('/web_proxy/settings');
@@ -109,9 +122,26 @@ class Settings extends ClearOS_Controller
         try {
             $data['form_type'] = $form_type;
 
+            //$data['transparent_capable'] = $this->squid_firewall->get_proxy_transparent_capability();
+            $data['transparent_capable'] = TRUE;
             $data['transparent'] = $this->squid_firewall->get_proxy_transparent_state();
-            $data['adzapper'] = $this->squid->get_adzapper_state();
             $data['user_authentication'] = $this->squid->get_user_authentication_state();
+            $data['adzapper'] = $this->squid->get_adzapper_state();
+            $data['modes'] = array(
+                '1' => lang('web_proxy_transparent_and_no_user_authentication'),
+                '2' => lang('web_proxy_non_transparent_with_user_authentication'),
+                '3' => lang('web_proxy_non_transaprent_Without_user_authentication'),
+            );
+
+            if ($data['transparent'] && !$data['user_authentication'])
+                $data['mode'] = 1;
+            else if (!$data['transparent'] && $data['user_authentication'])
+                $data['mode'] = 2;
+            else if (!$data['transparent'] && !$data['user_authentication'])
+                $data['mode'] = 3;
+            else 
+                $data['mode'] = 1;
+
         } catch (Exception $e) {
             $this->page->view_exception($e);
             return;

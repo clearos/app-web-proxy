@@ -78,8 +78,14 @@ $(document).ready(function() {
     // Transparent/User Auth handling
     //-------------------------------
 
-	$("#user_authentication").click(function() {
-    //    if ($("#user_authentication").val())
+    checkMode();
+
+    $('#transparent').change(function() {
+        checkMode();
+    });
+
+    $('#user_authentication').change(function() {
+        checkMode();
     });
 
     // Proxy warning
@@ -122,6 +128,17 @@ function showData(payload) {
         $("#date").html(payload.date);
         $("#time").html(payload.time);
         $("#result_box").show();
+    }
+}
+
+function checkMode() {
+    current_transparent = $('#transparent').val();
+    current_user_authentication = $('#user_authentication').val();
+
+    if ((current_transparent == 1) && (current_user_authentication == 1)) {
+        $("#configuration_warning_field").show();
+    } else {
+        $("#configuration_warning_field").hide();
     }
 }
 

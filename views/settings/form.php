@@ -53,24 +53,24 @@ if ($form_type === 'edit') {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Form open
+// Form
 ///////////////////////////////////////////////////////////////////////////////
+// This is a bit unusual... the edit mode combines two fields (transparent and
+// user authentication).
 
 echo form_open('web_proxy/settings/edit'); 
 echo form_header(lang('base_settings'));
 
-///////////////////////////////////////////////////////////////////////////////
-// Form fields
-///////////////////////////////////////////////////////////////////////////////
+if (! $transparent_capable) {
+    echo field_toggle_enable_disable('user_authentication', $user_authentication, lang('web_proxy_user_authentication'), $read_only);
+} else if ($form_type === 'edit') {
+    echo field_dropdown('mode', $modes, $mode, lang('web_proxy_mode'), $read_only);
+} else {
+    echo field_toggle_enable_disable('transparent', $transparent, lang('web_proxy_transparent_mode'), $read_only);
+    echo field_toggle_enable_disable('user_authentication', $user_authentication, lang('web_proxy_user_authentication'), $read_only);
+}
 
-echo field_toggle_enable_disable('transparent', $transparent, lang('web_proxy_transparent_mode'), $read_only);
-// echo field_toggle_enable_disable('adzapper', $adzapper, lang('web_proxy_banner_and_popop_blocker'), $read_only);
-echo field_toggle_enable_disable('user_authentication', $user_authentication, lang('web_proxy_user_authentication'), $read_only);
 echo field_button_set($buttons);
-
-///////////////////////////////////////////////////////////////////////////////
-// Form close
-///////////////////////////////////////////////////////////////////////////////
 
 echo form_footer(); 
 echo form_close();

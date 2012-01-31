@@ -58,17 +58,18 @@ clearos_load_language('base');
 
 use \clearos\apps\firewall\Firewall as Firewall;
 use \clearos\apps\firewall\Rule as Rule;
+use \clearos\apps\network\Network as Network;
 
 clearos_load_library('firewall/Firewall');
 clearos_load_library('firewall/Rule');
+clearos_load_library('network/Network');
 
 // Exceptions
 //-----------
 
-use \Exception as Exception;
-use \clearos\apps\base\Engine_Exception as Engine_Exception;
+use \clearos\apps\base\Validation_Exception as Validation_Exception;
 
-clearos_load_library('base/Engine_Exception');
+clearos_load_library('base/Validation_Exception');
 
 ///////////////////////////////////////////////////////////////////////////////
 // C L A S S
@@ -182,9 +183,29 @@ class Squid_Firewall extends Firewall
     }
 
     /**
+     * Returns capability of proxy transparent mode.
+     *
+     * @return boolean TRUE if transparent mode is available
+     * @throws Engine_Exception
+     */
+
+    public function get_proxy_transparent_capability()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        $network = new Network();
+        $mode = $network->get_mode();
+
+        if (($mode === Network::MODE_STANDALONE) || ($mode === Network::MODE_TRUSTED_STANDALONE))
+            return FALSE;
+        else
+            return TRUE;
+    }
+
+    /**
      * Returns state of proxy transparent mode.
      *
-     * @return boolean TRUE if in trasparent mode enabled
+     * @return boolean TRUE if in transparent mode enabled
      * @throws Engine_Exception
      */
 
