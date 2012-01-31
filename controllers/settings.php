@@ -122,8 +122,7 @@ class Settings extends ClearOS_Controller
         try {
             $data['form_type'] = $form_type;
 
-            //$data['transparent_capable'] = $this->squid_firewall->get_proxy_transparent_capability();
-            $data['transparent_capable'] = TRUE;
+            $data['transparent_capable'] = $this->squid_firewall->get_proxy_transparent_capability();
             $data['transparent'] = $this->squid_firewall->get_proxy_transparent_state();
             $data['user_authentication'] = $this->squid->get_user_authentication_state();
             $data['adzapper'] = $this->squid->get_adzapper_state();
