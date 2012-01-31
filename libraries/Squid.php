@@ -129,9 +129,9 @@ class Squid extends Daemon
     const STATUS_UNKNOWN = 'unknown';
     
     const DEFAULT_MAX_FILE_DOWNLOAD_SIZE = 0;
-    const DEFAULT_MAX_OBJECT_SIZE = 4194304;
+    const DEFAULT_MAX_OBJECT_SIZE = 4095;
     const DEFAULT_REPLY_BODY_MAX_SIZE_VALUE = 'none';
-    const DEFAULT_CACHE_SIZE = 104857600;
+    const DEFAULT_CACHE_SIZE = 102400;
     const DEFAULT_CACHE_DIR_VALUE = 'ufs /var/spool/squid 100 16 256';
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -451,9 +451,9 @@ class Squid extends Daemon
     }
 
     /**
-     * Returns the cache size (in bytes).
+     * Returns the cache size (in kilobytes).
      *
-     * @return integer cache size in bytes
+     * @return integer cache size in kilobytes
      * @throws Engine_Exception
      */
 
@@ -468,7 +468,7 @@ class Squid extends Daemon
             $items = preg_split('/\s+/', $this->config['cache_dir']['line'][1]);
 
             if (isset($items[2]))
-                return $this->_size_in_bytes($items[2], 'MB');
+                return $this->_size_in_kilobytes($items[2], 'MB');
             else
                 return self::DEFAULT_CACHE_SIZE;
         } else {
@@ -572,9 +572,9 @@ class Squid extends Daemon
     }
 
     /**
-     * Returns the maximum file download size (in bytes).
+     * Returns the maximum file download size (in kilobytes).
      *
-     * @return integer maximum file download size in bytes
+     * @return integer maximum file download size in kilobytes
      * @throws Engine_Exception
      */
 
@@ -598,9 +598,9 @@ class Squid extends Daemon
     }
 
     /**
-     * Returns the maximum object size (in bytes).
+     * Returns the maximum object size (in kilobytes).
      *
-     * @return int maximum object size in bytes
+     * @return int maximum object size in kilobytes
      * @throws Engine_Exception
      */
 
@@ -616,7 +616,7 @@ class Squid extends Daemon
 
             if (isset($items[0])) {
                 if (isset($items[1]))
-                    return $this->_size_in_bytes($items[0], $items[1]);
+                    return $this->_size_in_kilobytes($items[0], $items[1]);
                 else
                     return $items[0];
             } else {
@@ -812,7 +812,7 @@ class Squid extends Daemon
     /**
      * Sets the cache size.
      *
-     * @param integer $size size in bytes
+     * @param integer $size size in kilobytes
      *
      * @return void
      * @throws Engine_Exception, Validation_Exception
@@ -824,14 +824,14 @@ class Squid extends Daemon
 
         Validation_Exception::is_valid($this->validate_cache_size($size));
 
-        $size = round($size / 1024 / 1024); // MB for cache_dir
+        $size = round($size / 1024 ); // MB for cache_dir
         $this->_set_parameter('cache_dir', $size, 3, self::DEFAULT_CACHE_DIR_VALUE);
     }
 
     /**
      * Sets the maximum download size.
      *
-     * @param int $size size in bytes
+     * @param int $size size in kilobytes
      *
      * @return void
      * @throws Engine_Exception, Validation_Exception
@@ -846,14 +846,14 @@ class Squid extends Daemon
         if ($size == 'none') {
             $this->_set_parameter('reply_body_max_size', $size, self::CONSTANT_NO_OFFSET, self::DEFAULT_REPLY_BODY_MAX_SIZE_VALUE);
         } else {
-            $this->_set_parameter('reply_body_max_size', "$size bytes", self::CONSTANT_NO_OFFSET, self::DEFAULT_REPLY_BODY_MAX_SIZE_VALUE);
+            $this->_set_parameter('reply_body_max_size', "$size KB", self::CONSTANT_NO_OFFSET, self::DEFAULT_REPLY_BODY_MAX_SIZE_VALUE);
         }
     }
 
     /**
      * Sets the maximum object size.
      *
-     * @param int $size size in bytes
+     * @param int $size size in kilobytes
      *
      * @return void
      * @throws Engine_Exception, Validation_Exception
@@ -865,7 +865,7 @@ class Squid extends Daemon
 
         Validation_Exception::is_valid($this->validate_maximum_object_size($size));
 
-        $size = round($size / 1024); // KB to be consistent with squid.conf
+        $size = round($size);
         $this->_set_parameter('maximum_object_size', $size . ' KB', self::CONSTANT_NO_OFFSET, '');
     }
 
@@ -1270,17 +1270,17 @@ class Squid extends Daemon
     }
 
     /**
-     * Returns the size in bytes.
+     * Returns the size in kilobytes.
      *
      * @param integer $size  size
      * @param string  $units units
      *
      * @access private
-     * @return integer size in bytes
+     * @return integer size in kilobytes
      * @throws Engine_Exception, Validation_Exception
      */
 
-    protected function _size_in_bytes($size, $units)
+    protected function _size_in_kilobytes($size, $units)
     {
         clearos_profile(__METHOD__, __LINE__);
 
@@ -1288,13 +1288,13 @@ class Squid extends Daemon
             throw new Validation_Exception(lang('web_proxy_size_invalid'));
 
         if ($units == '') {
-            return $size;
+            return $size / 1024;
         } else if ($units == 'KB') {
-            return $size * 1024;
+            return $size;
         } else if ($units == 'MB') {
-            return $size * 1024*1024;
+            return $size * 1024;
         } else if ($units == 'GB') {
-            return $size * 1024*1024*1024;
+            return $size * 1024*1024;
         } else {
             throw new Validation_Exception(lang('web_proxy_size_invalid'));
         }

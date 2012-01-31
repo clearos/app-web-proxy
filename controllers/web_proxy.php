@@ -55,8 +55,10 @@ class Web_Proxy extends ClearOS_Controller
 
     function index()
     {
+        $this->lang->load('web_proxy');
+
         $views = array('web_proxy/server', 'web_proxy/settings', 'web_proxy/caching', 'web_proxy/policy');
 
-        $this->page->view_forms($views, lang('proxy_app_name'));
+        $this->page->view_forms($views, lang('web_proxy_app_name'));
     }
 }
