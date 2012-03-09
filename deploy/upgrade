@@ -33,3 +33,10 @@ if [ -n "$CHECK" ]; then
     logger -p local6.notice -t installer "app-web-proxy-core - updating architecture to $LOG_LIB"
     sed -i -e "s/\/usr\/$WRONG_LIB/\/usr\/$CORRECT_LIB/" /etc/squid/squid_auth.conf
 fi
+
+# Make sure Squid has permissions to Winbind pipe
+#------------------------------------------------
+
+if ! /usr/bin/id -n -G squid | grep -q "\<wbpriv\>"; then
+    /usr/sbin/usermod -G $(id -Gn squid | tr ' ' ','),wbpriv squid
+fi
