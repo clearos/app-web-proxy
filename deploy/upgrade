@@ -40,3 +40,8 @@ fi
 if ! /usr/bin/id -n -G squid | grep -q "\<wbpriv\>"; then
     /usr/sbin/usermod -G $(id -Gn squid | tr ' ' ','),wbpriv squid
 fi
+
+# Run sync event on install/upgrade
+#----------------------------------
+
+/usr/clearos/apps/web_proxy/deploy/syncaction

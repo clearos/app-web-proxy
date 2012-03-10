@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 $app['basename'] = 'web_proxy';
-$app['version'] = '1.0.4';
+$app['version'] = '1.0.6';
 $app['release'] = '1';
 $app['vendor'] = 'ClearFoundation';
 $app['packager'] = 'ClearFoundation';
@@ -41,6 +41,7 @@ $app['requires'] = array(
 $app['core_requires'] = array(
     'app-network-core',
     'app-firewall-core',
+    'app-samba-core >= 1:1.0.6',
     'app-web-proxy-plugin-core',
     'csplugin-filewatch',
     'squid >= 3.1.10',

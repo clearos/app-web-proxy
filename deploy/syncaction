@@ -44,7 +44,6 @@ fi
 
 echo "# Created automatically based on network configuration" > /etc/squid/squid_http_port.conf
 
-echo "wtf $AUTOMAGIC_LANIPS" 
 for IP in $AUTOMAGIC_LANIPS 127.0.0.1; do
 	echo "http_port $IP:3128$TRANSPARENT" >> /etc/squid/squid_http_port.conf
 done
