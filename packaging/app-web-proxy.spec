@@ -1,7 +1,7 @@
 
 Name: app-web-proxy
 Epoch: 1
-Version: 1.0.4
+Version: 1.0.6
 Release: 1%{dist}
 Summary: Web Proxy
 License: GPLv3
@@ -22,6 +22,7 @@ Group: ClearOS/Libraries
 Requires: app-base-core
 Requires: app-network-core
 Requires: app-firewall-core
+Requires: app-samba-core >= 1:1.0.6
 Requires: app-web-proxy-plugin-core
 Requires: csplugin-filewatch
 Requires: squid >= 3.1.10
