@@ -1,7 +1,7 @@
 
 Name: app-web-proxy
 Epoch: 1
-Version: 1.0.10
+Version: 1.1.0
 Release: 1%{dist}
 Summary: Web Proxy
 License: GPLv3
@@ -16,7 +16,7 @@ Requires: app-network
 A web proxy acts as an intermediary for web requests originating from your network.  Implementing the proxy server improves page access times, decreases bandwidth use, and provides site visit audits by user and IP address.
 
 %package core
-Summary: Web Proxy - APIs and install
+Summary: Web Proxy - Core
 License: LGPLv3
 Group: ClearOS/Libraries
 Requires: app-base-core
