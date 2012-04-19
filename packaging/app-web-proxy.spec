@@ -13,7 +13,7 @@ Requires: app-base
 Requires: app-network
 
 %description
-A web proxy acts as an intermediary for web requests originating from your network.  Implementing the proxy server improves page access times, decreases bandwidth use, and provides site visit audits by user and IP address.
+The Web Proxy app acts as an intermediary for web requests originating from your network.  Implementing the proxy server improves page access times, decreases bandwidth use, and provides site visit audits by user and IP address.
 
 %package core
 Summary: Web Proxy - Core
@@ -28,7 +28,7 @@ Requires: csplugin-filewatch
 Requires: squid >= 3.1.10
 
 %description core
-A web proxy acts as an intermediary for web requests originating from your network.  Implementing the proxy server improves page access times, decreases bandwidth use, and provides site visit audits by user and IP address.
+The Web Proxy app acts as an intermediary for web requests originating from your network.  Implementing the proxy server improves page access times, decreases bandwidth use, and provides site visit audits by user and IP address.
 
 This package provides the core API and libraries.
 
