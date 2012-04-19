@@ -23,7 +23,7 @@ $lang['web_proxy_configuration_settings_warning:'] = 'Please enable the proxy se
 
 
 $lang['web_proxy_warning_message'] = 'Warning Message';
-$lang['web_proxy_app_description'] = 'A web proxy acts as an intermediary for web requests originating from your network.  Implementing the proxy server improves page access times, decreases bandwidth use, and provides site visit audits by user and IP address.';
+$lang['web_proxy_app_description'] = 'The Web Proxy app acts as an intermediary for web requests originating from your network.  Implementing the proxy server improves page access times, decreases bandwidth use, and provides site visit audits by user and IP address.';
 $lang['web_proxy_app_name'] = 'Web Proxy';
 $lang['web_proxy_transparent_mode'] = 'Transparent Mode';
 $lang['web_proxy_content_filter'] = 'Content Filter';
