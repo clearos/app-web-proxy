@@ -137,7 +137,7 @@ class Squid_Firewall extends Firewall
             $info = array();
             $info['name'] = $rule->get_name();
             $info['address'] = $rule->get_address();
-            $info['enabled'] = $rule->is_enabledd();
+            $info['enabled'] = $rule->is_enabled();
             $list[] = $info;
         }
 

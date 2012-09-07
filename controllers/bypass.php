@@ -7,7 +7,7 @@
  * @package    Web_Proxy
  * @subpackage Controllers
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2011 ClearFoundation
+ * @copyright  2011-2012 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       http://www.clearfoundation.com/docs/developer/apps/web_proxy/
  */
@@ -40,7 +40,7 @@
  * @package    Web_Proxy
  * @subpackage Controllers
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2011 ClearFoundation
+ * @copyright  2011-2012 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       http://www.clearfoundation.com/docs/developer/apps/web_proxy/
  */
@@ -55,7 +55,83 @@ class Bypass extends ClearOS_Controller
 
     function index()
     {
-        $this->_form('view');
+        // Load dependencies
+        //------------------
+
+        $this->lang->load('web_proxy');
+        $this->load->library('web_proxy/Squid_Firewall');
+
+        // Load view data
+        //---------------
+
+        try {
+            $data['bypasses'] = $this->squid_firewall->get_proxy_bypass_list();
+        } catch (Exception $e) {
+            $this->page->view_exception($e);
+            return;
+        }
+
+        // Load views
+        //-----------
+
+        $this->page->view_form('web_proxy/bypass/summary', $data, lang('web_proxy_web_proxy_bypass'));
+    }
+
+    /**
+     * Web proxy bypass add.
+     *
+     * @return view
+     */
+
+    function add()
+    {
+        $this->_form('add');
+    }
+
+    /**
+     * Delete entry view.
+     *
+     * @param string $ip IP address
+     *
+     * @return view
+     */
+
+    function delete($ip)
+    {
+        $confirm_uri = '/app/web_proxy/bypass/destroy/' . $ip;
+        $cancel_uri = '/app/web_proxy/bypass';
+        $items = array($ip);
+
+        $this->page->view_confirm_delete($confirm_uri, $cancel_uri, $items);
+    }
+
+    /**
+     * Destroys entry view.
+     *
+     * @param string $ip IP address
+     *
+     * @return view
+     */
+
+    function destroy($ip = NULL)
+    {
+        // Load libraries
+        //---------------
+
+        $this->load->library('web_proxy/Squid_Firewall');
+
+        // Handle delete
+        //--------------
+
+        try {
+            $this->squid_firewall->delete_proxy_bypass($ip);
+
+            $this->page->set_status_deleted();
+            redirect('/web_proxy/bypass');
+        } catch (Exception $e) {
+            $this->page->view_exception($e);
+            return;
+        }
     }
 
     /**
@@ -82,15 +158,14 @@ class Bypass extends ClearOS_Controller
         // Load dependencies
         //------------------
 
-        $this->load->library('web_proxy/Squid');
         $this->lang->load('web_proxy');
-        $this->lang->load('base');
+        $this->load->library('web_proxy/Squid_Firewall');
 
         // Set validation rules
         //---------------------
 
-        $this->form_validation->set_policy('domain', 'web_proxy/Squid', 'validate_domain', TRUE);
-        $this->form_validation->set_policy('authoritative', 'web_proxy/Squid', 'validate_authoritative_state', TRUE);
+        $this->form_validation->set_policy('nickname', 'web_proxy/Squid_Firewall', 'validate_name', TRUE);
+        $this->form_validation->set_policy('ip', 'web_proxy/Squid_Firewall', 'validate_ip', TRUE);
         $form_ok = $this->form_validation->run();
 
         // Handle form submit
@@ -99,8 +174,11 @@ class Bypass extends ClearOS_Controller
         if ($this->input->post('submit') && ($form_ok)) {
             try {
                 // Update
-                $this->dnsmasq->set_domain_name($this->input->post('domain'));
-                $this->dnsmasq->set_authoritative_state((bool)$this->input->post('authoritative'));
+                $this->squid_firewall->add_proxy_bypass(
+                    $this->input->post('nickname'),
+                    $this->input->post('ip')
+                );
+
 
                 // clearsync handles reload
                 $this->page->set_status_updated();
@@ -114,22 +192,11 @@ class Bypass extends ClearOS_Controller
         // Load view data
         //---------------
 
-        try {
-            $data['form_type'] = $form_type;
-
-            $data['adzapper'] = $this->squid->get_adzapper_state();
-
-/*
-            $data['authoritative'] = $this->dnsmasq->get_authoritative_state();
-*/
-        } catch (Exception $e) {
-            $this->page->view_exception($e);
-            return;
-        }
+        $data['form_type'] = $form_type;
 
         // Load views
         //-----------
 
-        $this->page->view_form('web_proxy/bypass/summary', $data, lang('web_proxy_web_site_bypass'));
+        $this->page->view_form('web_proxy/bypass/item', $data, lang('web_proxy_web_proxy_bypass'));
     }
 }

@@ -1,15 +1,15 @@
 <?php
 
 /**
- * DHCP subnets view.
+ * Web proxy bypass view.
  *
  * @category   ClearOS
  * @package    DHCP
  * @subpackage Views
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2011 ClearFoundation
+ * @copyright  2012 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
- * @link       http://www.clearfoundation.com/docs/developer/apps/dhcp/
+ * @link       http://www.clearfoundation.com/docs/developer/apps/web_proxy/
  */
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -33,56 +33,47 @@
 // Load dependencies
 ///////////////////////////////////////////////////////////////////////////////
 
-$this->lang->load('dhcp');
+$this->lang->load('web_proxy');
 
 ///////////////////////////////////////////////////////////////////////////////
-// Form modes
+// Form handler
 ///////////////////////////////////////////////////////////////////////////////
 
-if ($form_type === 'edit') {
-    $form_path = '/dhcp/subnets/edit';
-    $buttons = array(
-        form_submit_update('submit'),
-        anchor_cancel('/app/dhcp/subnets/'),
-        anchor_delete('/app/dhcp/subnets/delete/' . $interface)
-    );
-} else {
-    $form_path = '/dhcp/subnets/add';
+if ($form_type === 'view') {
+    $read_only = TRUE;
+    $form_path = '/web_proxy/bypass/view';
     $buttons = array(
         form_submit_add('submit'),
-        anchor_cancel('/app/dhcp/subnets/')
+        anchor_cancel('/app/web_proxy/bypass')
+    );
+} else if ($form_type === 'add') {
+    $read_only = FALSE;
+    $form_path = '/web_proxy/bypass/add';
+    $buttons = array(
+        form_submit_add('submit'),
+        anchor_cancel('/app/web_proxy/bypass/')
+    );
+} else {
+    $read_only = FALSE;
+    $form_path = '/web_proxy/bypass/edit';
+    $buttons = array(
+        form_submit_update('submit'),
+        anchor_cancel('/app/web_proxy/bypass/'),
+        anchor_delete('/app/web_proxy/bypass/delete/' . $interface)
     );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Form open
+// Form
 ///////////////////////////////////////////////////////////////////////////////
 
-echo form_open($form_path . '/' . $interface);
-echo form_header(lang('dhcp_subnet'));
+echo form_open($form_path);
+echo form_header(lang('web_proxy_web_proxy_bypass'));
 
-///////////////////////////////////////////////////////////////////////////////
-// Form fields and buttons
-///////////////////////////////////////////////////////////////////////////////
-
-echo field_input('interface', $interface, lang('dhcp_network_interface'), TRUE);
-echo field_input('network', $network, lang('dhcp_network'), TRUE);
-echo field_dropdown('lease_time', $lease_times, $lease_time, lang('dhcp_lease_time'));
-echo field_input('gateway', $gateway, lang('dhcp_gateway'));
-echo field_input('start', $start, lang('dhcp_ip_range_start'));
-echo field_input('end', $end, lang('dhcp_ip_range_end'));
-echo field_input('dns1', $dns[0], lang('dhcp_dns') . " #1");
-echo field_input('dns2', $dns[1], lang('dhcp_dns') . " #2");
-echo field_input('dns3', $dns[2], lang('dhcp_dns') . " #3");
-echo field_input('wins', $wins, lang('dhcp_wins'));
-echo field_input('tftp', $tftp, lang('dhcp_tftp'));
-echo field_input('ntp', $ntp, lang('dhcp_ntp'));
+echo field_input('nickname', $nickname, lang('firewall_nickname'), $read_only);
+echo field_input('ip', $ip, lang('network_ip'), $read_only);
 
 echo field_button_set($buttons);
-
-///////////////////////////////////////////////////////////////////////////////
-// Form close
-///////////////////////////////////////////////////////////////////////////////
 
 echo form_footer();
 echo form_close();

@@ -7,7 +7,7 @@
  * @package    Web_Proxy
  * @subpackage Views
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2011 ClearFoundation
+ * @copyright  2012 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       http://www.clearfoundation.com/docs/developer/apps/web_proxy/
  */
@@ -33,6 +33,7 @@
 // Load dependencies
 ///////////////////////////////////////////////////////////////////////////////
 
+$this->lang->load('firewall');
 $this->lang->load('network');
 $this->lang->load('web_proxy');
 
@@ -41,51 +42,34 @@ $this->lang->load('web_proxy');
 ///////////////////////////////////////////////////////////////////////////////
 
 $headers = array(
-    lang('network_interface'),
-    lang('network_network'),
-    lang('base_status')
+    lang('firewall_nickname'),
+    lang('network_ip'),
 );
 
 ///////////////////////////////////////////////////////////////////////////////
 // Anchors 
 ///////////////////////////////////////////////////////////////////////////////
 
-$anchors = array();
+$anchors = array(anchor_add('/app/web_proxy/bypass/add'));
 
 ///////////////////////////////////////////////////////////////////////////////
 // Items
 ///////////////////////////////////////////////////////////////////////////////
 
-foreach ($subnets as $interface => $subnetinfo) {
-
-    if (! $subnetinfo["isvalid"]) {
-        $status = "<span class='alert'>" . lang('base_invalid') . "</span>";
-        $action = "/app/dhcp/subnets/edit/" . $interface;
-        $buttons = array(anchor_delete('/app/dhcp/subnets/delete/' . $interface . '/' . $subnetinfo['network']));
-    } else if ($subnetinfo["isconfigured"]) {
-        $status = "<span class='ok'>" . lang('base_enabled') . "</span>";
-        $action = "/app/dhcp/subnets/edit/" . $interface;
-        $buttons = array(
-                anchor_edit('/app/dhcp/subnets/edit/' . $interface),
-                anchor_delete('/app/dhcp/subnets/delete/' . $interface . '/' . $subnetinfo['network'])
-            );
-    } else {
-        $status = "<span class='alert'>" . lang('base_disabled') . "</span>";
-        $action = "/app/dhcp/subnets/add/" . $interface;
-        $buttons = array(anchor_configure('/app/dhcp/subnets/add/' . $interface));
-    }
+foreach ($bypasses as $id => $details) {
 
     ///////////////////////////////////////////////////////////////////////////
     // Item details
     ///////////////////////////////////////////////////////////////////////////
 
-    $item['title'] = "$interface / " .  $subnetinfo['network'];
-    $item['action'] = $action;
-    $item['anchors'] = button_set($buttons);
+    $item['title'] = $details['address'];
+    $item['action'] = "/app/web_proxy/bypass/edit/" . $details['address'];
+    $item['anchors'] = button_set(
+        array(anchor_delete('/app/web_proxy/bypass/delete/' . $details['address']))
+    );
     $item['details'] = array(
-        $interface,
-        $subnetinfo['network'],
-        $status
+        $details['name'],
+        $details['address']
     );
 
     $items[] = $item;
@@ -98,7 +82,7 @@ sort($items);
 ///////////////////////////////////////////////////////////////////////////////
 
 echo summary_table(
-    lang('web_proxy_web_site_bypass'),
+    lang('web_proxy_web_proxy_bypass'),
     $anchors,
     $headers,
     $items
