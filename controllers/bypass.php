@@ -91,16 +91,19 @@ class Bypass extends ClearOS_Controller
     /**
      * Delete entry view.
      *
-     * @param string $ip IP address
+     * @param string $address address
      *
      * @return view
      */
 
-    function delete($ip)
+    function delete($address)
     {
-        $confirm_uri = '/app/web_proxy/bypass/destroy/' . $ip;
+        // Deal with embedded / in network notation
+        $converted_address = preg_replace('/-/', '/', $address);
+
+        $confirm_uri = '/app/web_proxy/bypass/destroy/' . $address;
         $cancel_uri = '/app/web_proxy/bypass';
-        $items = array($ip);
+        $items = array($converted_address);
 
         $this->page->view_confirm_delete($confirm_uri, $cancel_uri, $items);
     }
@@ -108,12 +111,12 @@ class Bypass extends ClearOS_Controller
     /**
      * Destroys entry view.
      *
-     * @param string $ip IP address
+     * @param string $address IP address
      *
      * @return view
      */
 
-    function destroy($ip = NULL)
+    function destroy($address)
     {
         // Load libraries
         //---------------
@@ -124,7 +127,10 @@ class Bypass extends ClearOS_Controller
         //--------------
 
         try {
-            $this->squid_firewall->delete_proxy_bypass($ip);
+            // Deal with embedded / in network notation
+            $converted_address = preg_replace('/-/', '/', $address);
+
+            $this->squid_firewall->delete_proxy_bypass($converted_address);
 
             $this->page->set_status_deleted();
             redirect('/web_proxy/bypass');
@@ -165,7 +171,7 @@ class Bypass extends ClearOS_Controller
         //---------------------
 
         $this->form_validation->set_policy('nickname', 'web_proxy/Squid_Firewall', 'validate_name', TRUE);
-        $this->form_validation->set_policy('ip', 'web_proxy/Squid_Firewall', 'validate_ip', TRUE);
+        $this->form_validation->set_policy('address', 'web_proxy/Squid_Firewall', 'validate_address', TRUE);
         $form_ok = $this->form_validation->run();
 
         // Handle form submit
@@ -176,7 +182,7 @@ class Bypass extends ClearOS_Controller
                 // Update
                 $this->squid_firewall->add_proxy_bypass(
                     $this->input->post('nickname'),
-                    $this->input->post('ip')
+                    $this->input->post('address')
                 );
 
 

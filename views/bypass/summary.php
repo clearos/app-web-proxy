@@ -43,7 +43,7 @@ $this->lang->load('web_proxy');
 
 $headers = array(
     lang('firewall_nickname'),
-    lang('network_ip'),
+    lang('network_address'),
 );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -57,15 +57,13 @@ $anchors = array(anchor_add('/app/web_proxy/bypass/add'));
 ///////////////////////////////////////////////////////////////////////////////
 
 foreach ($bypasses as $id => $details) {
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Item details
-    ///////////////////////////////////////////////////////////////////////////
+    // Deal with embedded / in network notation
+    $address = preg_replace('/\//', '-', $details['address']);
 
     $item['title'] = $details['address'];
-    $item['action'] = "/app/web_proxy/bypass/edit/" . $details['address'];
+    $item['action'] = '/app/web_proxy/bypass/edit/' . $address;
     $item['anchors'] = button_set(
-        array(anchor_delete('/app/web_proxy/bypass/delete/' . $details['address']))
+        array(anchor_delete('/app/web_proxy/bypass/delete/' . $address))
     );
     $item['details'] = array(
         $details['name'],

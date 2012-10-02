@@ -34,6 +34,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 $this->lang->load('web_proxy');
+$this->lang->load('firewall');
+$this->lang->load('network');
 
 ///////////////////////////////////////////////////////////////////////////////
 // Form handler
@@ -71,7 +73,7 @@ echo form_open($form_path);
 echo form_header(lang('web_proxy_web_proxy_bypass'));
 
 echo field_input('nickname', $nickname, lang('firewall_nickname'), $read_only);
-echo field_input('ip', $ip, lang('network_ip'), $read_only);
+echo field_input('address', $address, lang('network_address'), $read_only);
 
 echo field_button_set($buttons);
 
