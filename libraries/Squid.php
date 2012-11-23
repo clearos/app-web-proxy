@@ -794,18 +794,21 @@ class Squid extends Daemon
         $lines .= "auth_param basic program $this->file_pam_auth\n";
         $lines .= "external_acl_type system_group %LOGIN $this->file_squid_unix_group -p\n";
 
-	// Add NTLM if Samba is installed
-	if (clearos_library_installed('samba/Samba')) {
-		clearos_load_library('samba/Samba');
-		$samba = new \clearos\apps\samba\Samba();
-		$domain = $samba->get_workgroup();
+        // Add NTLM if Samba is installed
+        if (clearos_library_installed('samba_common/Samba')) {
+            clearos_load_library('samba_common/Samba');
+            $samba = new \clearos\apps\samba_common\Samba();
 
-		// TODO: hard coded web_proxy_plugin below
-		$lines .= "# NTLM\n";
-		$lines .= "auth_param ntlm program /usr/bin/ntlm_auth --helper-protocol=squid-2.5-ntlmssp --require-membership-of=$domain+web_proxy_plugin\n";
-		$lines .= "auth_param ntlm children $children\n";
-		$lines .= "auth_param ntlm keep_alive on\n";
-	}
+            if ($samba->is_initialized()) {
+                $domain = $samba->get_workgroup();
+
+                // TODO: hard coded web_proxy_plugin below
+                $lines .= "# NTLM\n";
+                $lines .= "auth_param ntlm program /usr/bin/ntlm_auth --helper-protocol=squid-2.5-ntlmssp --require-membership-of=$domain+web_proxy_plugin\n";
+                $lines .= "auth_param ntlm children $children\n";
+                $lines .= "auth_param ntlm keep_alive on\n";
+            }
+        }
 
         if ($file->exists()) 
             $file->delete();
