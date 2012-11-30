@@ -1,7 +1,7 @@
 
 Name: app-web-proxy
 Epoch: 1
-Version: 1.4.5
+Version: 1.4.7
 Release: 1%{dist}
 Summary: Web Proxy
 License: GPLv3
@@ -24,6 +24,7 @@ Requires: app-network-core >= 1:1.2.7
 Requires: app-firewall-core
 Requires: app-web-proxy-plugin-core
 Requires: app-samba-common-core
+Requires: app-storage-core > 1:1.4.7
 Requires: csplugin-filewatch
 Requires: squid >= 3.1.10
 
@@ -54,6 +55,7 @@ install -D -m 0644 packaging/squid_http_access.conf %{buildroot}/etc/squid/squid
 install -D -m 0644 packaging/squid_http_port.conf %{buildroot}/etc/squid/squid_http_port.conf
 install -D -m 0644 packaging/squid_lans.conf %{buildroot}/etc/squid/squid_lans.conf
 install -D -m 0644 packaging/web_proxy.acl %{buildroot}/var/clearos/base/access_control/public/web_proxy
+install -D -m 0644 packaging/web_proxy_default.conf %{buildroot}/etc/clearos/storage.d/web_proxy_default.conf
 
 %post
 logger -p local6.notice -t installer 'app-web-proxy - installing'
@@ -110,3 +112,4 @@ exit 0
 %config(noreplace) /etc/squid/squid_http_port.conf
 %config(noreplace) /etc/squid/squid_lans.conf
 /var/clearos/base/access_control/public/web_proxy
+/etc/clearos/storage.d/web_proxy_default.conf

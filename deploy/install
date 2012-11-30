@@ -2,6 +2,11 @@
 
 TIMESTAMP=`date "+%b-%d-%Y-%T"`
 
+# Initialize storage
+#-------------------
+
+/usr/sbin/storage
+
 # Deploy default configuration files
 #-----------------------------------
 

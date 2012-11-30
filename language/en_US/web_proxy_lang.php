@@ -20,6 +20,7 @@ $lang['web_proxy_online'] = 'Online';
 $lang['web_proxy_offline'] = 'Offline';
 $lang['web_proxy_unavailable'] = 'Unavailable';
 $lang['web_proxy_configuration_settings_warning:'] = 'Please enable the proxy server settings with following values:';
+$lang['web_proxy_web_proxy_storage'] = 'Web Proxy Storage';
 
 
 $lang['web_proxy_warning_message'] = 'Warning Message';
