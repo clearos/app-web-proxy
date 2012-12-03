@@ -40,6 +40,7 @@ $app['requires'] = array(
 );
 
 $app['core_requires'] = array(
+    'app-base-core >= 1:1.4.7',
     'app-network-core >= 1:1.2.7',
     'app-firewall-core',
     'app-web-proxy-plugin-core',

@@ -61,24 +61,22 @@ use \clearos\apps\base\File as File;
 use \clearos\apps\base\Folder as Folder;
 use \clearos\apps\base\Product as Product;
 use \clearos\apps\base\Shell as Shell;
-use \clearos\apps\base\Stats as Stats;
+use \clearos\apps\base\Tuning as Tuning;
 use \clearos\apps\content_filter\DansGuardian as DansGuardian;
 use \clearos\apps\network\Network as Network;
 use \clearos\apps\network\Network_Status as Network_Status;
 use \clearos\apps\network\Network_Utils as Network_Utils;
-use \clearos\apps\web_proxy\Squid as Squid;
 
 clearos_load_library('base/Daemon');
 clearos_load_library('base/File');
 clearos_load_library('base/Folder');
 clearos_load_library('base/Product');
 clearos_load_library('base/Shell');
-clearos_load_library('base/Stats');
+clearos_load_library('base/Tuning');
 clearos_load_library('content_filter/DansGuardian');
 clearos_load_library('network/Network');
 clearos_load_library('network/Network_Status');
 clearos_load_library('network/Network_Utils');
-clearos_load_library('web_proxy/Squid');
 
 // Exceptions
 //-----------
@@ -128,6 +126,7 @@ class Squid extends Daemon
     const STATUS_OFFLINE = 'offline';
     const STATUS_UNKNOWN = 'unknown';
     
+    const DEFAULT_CHILDREN = 10;
     const DEFAULT_MAX_FILE_DOWNLOAD_SIZE = 0;
     const DEFAULT_MAX_OBJECT_SIZE = 4095;
     const DEFAULT_REPLY_BODY_MAX_SIZE_VALUE = 'none';
@@ -677,6 +676,30 @@ class Squid extends Daemon
     }
 
     /**
+     * Returns tuning level.
+     *
+     * @return string tuning level
+     * @throws Engine_Exception
+     */
+
+    public function get_tuning()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        if (clearos_app_installed('performance_tuning')) {
+            clearos_load_library('performance_tuning/Performance_Tuning');
+
+            $performance = new \clearos\apps\performance_tuning\Performance_Tuning();
+            $tuning = $performance->get_web_proxy_tuning();
+        } else {
+            $tuning['level'] = Tuning::LEVEL_HOME_NETWORK;
+            $tuning['children'] = self::DEFAULT_CHILDREN;
+        }
+
+        return $tuning;
+    }
+    
+    /**
      * Returns state of user authentication.
      *
      * @return boolean TRUE if user authentication is enabled.
@@ -773,17 +796,8 @@ class Squid extends Daemon
         $name = $product->get_name();
         $realm = $name . ' - ' . lang('web_proxy_web_proxy');
 
-        $children = '15';
-
-        try {
-            $stats = new Stats();
-            $memory_stats = $stats->get_memory_stats();
-
-            $multiplier = floor($memory_stats['memory_total'] / 1000000) + 1;
-            $children = $children * $multiplier;
-        } catch (Exception $e) {
-            // not fatal
-        }
+        $tuning = $this->get_tuning();
+        $children = $tuning['children'];
 
         $file = new File(self::FILE_AUTH_CONFIG);
 

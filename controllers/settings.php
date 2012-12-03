@@ -83,6 +83,7 @@ class Settings extends ClearOS_Controller
         //------------------
 
         $this->lang->load('web_proxy');
+        $this->load->library('base/Tuning');
         $this->load->library('web_proxy/Squid');
         $this->load->library('web_proxy/Squid_Firewall');
 
@@ -126,6 +127,11 @@ class Settings extends ClearOS_Controller
             $data['transparent'] = $this->squid_firewall->get_proxy_transparent_state();
             $data['user_authentication'] = $this->squid->get_user_authentication_state();
             $data['adzapper'] = $this->squid->get_adzapper_state();
+            $data['levels'] = $this->tuning->get_levels();
+
+            $tuning = $this->squid->get_tuning();
+            $data['level'] = $tuning['level'];
+
             $data['modes'] = array(
                 '1' => lang('web_proxy_transparent_and_no_user_authentication'),
                 '2' => lang('web_proxy_non_transparent_with_user_authentication'),
