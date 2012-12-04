@@ -45,7 +45,7 @@ $app['core_requires'] = array(
     'app-firewall-core',
     'app-web-proxy-plugin-core',
     'app-samba-common-core',
-    'app-storage-core > 1:1.4.7',
+    'app-storage-core >= 1:1.4.7',
     'csplugin-filewatch',
     'squid >= 3.1.10',
 );
