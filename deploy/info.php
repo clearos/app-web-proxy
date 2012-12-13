@@ -97,3 +97,9 @@ $app['core_file_manifest'] = array(
         'config_params' => 'noreplace',
     ),
 );
+
+$app['delete_dependency'] = array(
+    'app-web-proxy-core',
+    'app-web-proxy-plugin-core',
+    'squid'
+);
