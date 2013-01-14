@@ -117,6 +117,7 @@ class Squid extends Daemon
     const FILE_AUTH_CONFIG = '/etc/squid/squid_auth.conf';
     const FILE_HTTP_ACCESS_CONFIG = '/etc/squid/squid_http_access.conf';
     const FILE_ADZAPPER = '/usr/sbin/adzapper';
+    const FILE_APP_CONFIG = '/etc/clearos/web_proxy.conf';
     const PATH_SPOOL = '/var/spool/squid';
 
     const CONSTANT_NO_OFFSET = -1;
@@ -627,6 +628,33 @@ class Squid extends Daemon
     }
 
     /**
+     * Returns NTLM state.
+     *
+     * @return boolean TRUE if NTLM mode is desired
+     * @throws Engine_Exception
+     */
+
+    public function get_ntlm_state()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        $file = new File(self::FILE_APP_CONFIG);
+
+        if (!$file->exists())
+            return TRUE;
+
+        try {
+            $state_value = $file->lookup_value('/ntlm\s*=\s*/');
+        } catch (File_No_Match_Exception $e) {
+            return TRUE;
+        }
+
+        $state = (preg_match('/yes/i', $state_value)) ? TRUE : FALSE;
+
+        return $state;
+    }
+
+    /**
      * Returns redirect_program parameter.
      *
      * @return string redirect program
@@ -799,6 +827,9 @@ class Squid extends Daemon
         $tuning = $this->get_tuning();
         $children = $tuning['children'];
 
+        // Basic authentication
+        //---------------------
+
         $file = new File(self::FILE_AUTH_CONFIG);
 
         $lines = "# This file is managed by the ClearOS API.  Use squid.conf for customization.\n";
@@ -808,8 +839,10 @@ class Squid extends Daemon
         $lines .= "auth_param basic program $this->file_pam_auth\n";
         $lines .= "external_acl_type system_group %LOGIN $this->file_squid_unix_group -p\n";
 
-        // Add NTLM if Samba is installed
-        if (clearos_library_installed('samba_common/Samba')) {
+        // Add NTLM if desired and possible
+        //---------------------------------
+
+        if ($this->get_ntlm_state() && clearos_library_installed('samba_common/Samba')) {
             clearos_load_library('samba_common/Samba');
             $samba = new \clearos\apps\samba_common\Samba();
 
@@ -891,6 +924,37 @@ class Squid extends Daemon
         $this->_set_parameter('maximum_object_size', $size . ' KB', self::CONSTANT_NO_OFFSET, '');
     }
 
+    /**
+     * Sets NTLM state.
+     *
+     * @param boolean $state state of NTLM mode
+     *
+     * @return void
+     * @throws Engine_Exception
+     */
+
+    public function set_ntlm_state($state)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        Validation_Exception::is_valid($this->validate_state($state));
+
+        $file = new File(self::FILE_APP_CONFIG);
+
+        if (! $file->exists())
+            $file->create('root', 'root', '0644');
+
+        $state_value = ($state) ? 'yes' : 'no';
+
+        $match = $file->replace_lines("/^ntlm\s*=/i", "ntlm = $state_value\n");
+
+        if (! $match)
+            $file->add_lines("ntlm = $state_value\n");
+    }
+
+    /**
+     * Returns redirect_program parameter.
+     *
     /**
      * Adds (or updates) a time-based ACL.
      *
@@ -1404,6 +1468,22 @@ class Squid extends Daemon
 
         if (!preg_match("/^([A-Za-z0-9\-\.\_]+)$/", $name))
             return lang('web_proxy_invalid_name');
+    }
+
+    /**
+     * Validation routine for state.
+     *
+     * @param boolean $state state
+     *
+     * @return string error message if state is invalid
+     */
+
+    public function validate_state($state)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        if (!clearos_is_valid_boolean($state))
+            return lang('base_validate_state_invalid');
     }
 
     /**

@@ -2,6 +2,7 @@
 
 $lang['web_proxy_transparent_and_no_user_authentication'] = 'Transparent + No User Authentication';
 $lang['web_proxy_non_transparent_with_user_authentication'] = 'Non-Transparent + User Authentication';
+$lang['web_proxy_non_transparent_with_user_authentication_and_ntlm'] = 'Non-Transparent + User Authentication + NTLM';
 $lang['web_proxy_non_transaprent_Without_user_authentication'] = 'Non-Transparent + No User Authentication';
 $lang['web_proxy_mode'] = 'Mode';
 
@@ -89,4 +90,4 @@ $lang['web_proxy_warning_urn_resolve'] = 'Unable to resolve address / URN';
 $lang['web_proxy_warning_user_no_access'] = 'Username-based authentication is not enabled';
 $lang['web_proxy_warning_write_error'] = 'Network write error occurred';
 $lang['web_proxy_warning_zero_size_object'] = 'No data was received for your request - web server might be overloaded';
-
+$lang['web_proxy_ntlm_mode'] = 'NTLM Mode';

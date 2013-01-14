@@ -140,6 +140,11 @@ function checkMode() {
     } else {
         $("#configuration_warning_field").hide();
     }
+
+    if (current_user_authentication == 1)
+        $("#ntlm_field").show();
+    else
+        $("#ntlm_field").hide();
 }
 
 // vim: ts=4 syntax=javascript

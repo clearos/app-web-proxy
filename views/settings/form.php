@@ -63,12 +63,16 @@ echo form_header(lang('base_settings'));
 
 if (! $transparent_capable) {
     echo field_toggle_enable_disable('user_authentication', $user_authentication, lang('web_proxy_user_authentication'), $read_only);
+    if ($ntlm_available)
+        echo field_toggle_enable_disable('ntlm', $ntlm, lang('web_proxy_ntlm_mode'), $read_only);
     echo field_dropdown('levels', $levels, $level, lang('base_performance_level'), TRUE);
 } else if ($form_type === 'edit') {
     echo field_dropdown('mode', $modes, $mode, lang('web_proxy_mode'), $read_only);
 } else {
     echo field_toggle_enable_disable('transparent', $transparent, lang('web_proxy_transparent_mode'), $read_only);
     echo field_toggle_enable_disable('user_authentication', $user_authentication, lang('web_proxy_user_authentication'), $read_only);
+    if ($ntlm_available)
+        echo field_toggle_enable_disable('ntlm', $ntlm, lang('web_proxy_ntlm_mode'), $read_only);
     echo field_dropdown('levels', $levels, $level, lang('base_performance_level'), TRUE);
 }
 

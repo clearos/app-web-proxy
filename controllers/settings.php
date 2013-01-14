@@ -87,12 +87,18 @@ class Settings extends ClearOS_Controller
         $this->load->library('web_proxy/Squid');
         $this->load->library('web_proxy/Squid_Firewall');
 
+        $ntlm_available = FALSE;
+
+        if (clearos_library_installed('samba_common/Samba')) {
+            $this->load->library('samba_common/Samba');
+            $ntlm_available = $this->samba->is_initialized();
+        }
+
         // Handle form submit
         //-------------------
 
         if ($this->input->post('submit')) {
             try {
-
                 if ($this->input->post('mode')) {
                     $mode = $this->input->post('mode');
                     if ($mode == 1) {
@@ -100,12 +106,18 @@ class Settings extends ClearOS_Controller
                         $this->squid->set_user_authentication_state(FALSE);
                     } else if ($mode == 2) {
                         $this->squid_firewall->set_proxy_transparent_state(FALSE);
+                        $this->squid->set_ntlm_state(FALSE);
                         $this->squid->set_user_authentication_state(TRUE);
                     } else if ($mode == 3) {
+                        $this->squid_firewall->set_proxy_transparent_state(FALSE);
+                        $this->squid->set_ntlm_state(TRUE);
+                        $this->squid->set_user_authentication_state(TRUE);
+                    } else if ($mode == 4) {
                         $this->squid_firewall->set_proxy_transparent_state(FALSE);
                         $this->squid->set_user_authentication_state(FALSE);
                     }
                 } else {
+                    $this->squid->set_ntlm_state($this->input->post('ntlm'));
                     $this->squid->set_user_authentication_state($this->input->post('user_authentication'));
                 }
 
@@ -126,24 +138,28 @@ class Settings extends ClearOS_Controller
             $data['transparent_capable'] = $this->squid_firewall->get_proxy_transparent_capability();
             $data['transparent'] = $this->squid_firewall->get_proxy_transparent_state();
             $data['user_authentication'] = $this->squid->get_user_authentication_state();
+            $data['ntlm'] = $this->squid->get_ntlm_state();
+            $data['ntlm_available'] = $ntlm_available;
             $data['adzapper'] = $this->squid->get_adzapper_state();
             $data['levels'] = $this->tuning->get_levels();
 
             $tuning = $this->squid->get_tuning();
             $data['level'] = $tuning['level'];
 
-            $data['modes'] = array(
-                '1' => lang('web_proxy_transparent_and_no_user_authentication'),
-                '2' => lang('web_proxy_non_transparent_with_user_authentication'),
-                '3' => lang('web_proxy_non_transaprent_Without_user_authentication'),
-            );
+            $data['modes']['1'] = lang('web_proxy_transparent_and_no_user_authentication');
+            $data['modes']['2'] = lang('web_proxy_non_transparent_with_user_authentication');
+            if ($ntlm_available)
+                $data['modes']['3'] = lang('web_proxy_non_transparent_with_user_authentication_and_ntlm');
+            $data['modes']['4'] = lang('web_proxy_non_transaprent_Without_user_authentication');
 
             if ($data['transparent'] && !$data['user_authentication'])
                 $data['mode'] = 1;
-            else if (!$data['transparent'] && $data['user_authentication'])
+            else if (!$data['transparent'] && $data['user_authentication'] && !$data['ntlm'])
                 $data['mode'] = 2;
-            else if (!$data['transparent'] && !$data['user_authentication'])
+            else if (!$data['transparent'] && $data['user_authentication'] && $data['ntlm'])
                 $data['mode'] = 3;
+            else if (!$data['transparent'] && !$data['user_authentication'])
+                $data['mode'] = 4;
             else 
                 $data['mode'] = 1;
 
