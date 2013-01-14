@@ -56,6 +56,7 @@ install -D -m 0644 packaging/squid_http_access.conf %{buildroot}/etc/squid/squid
 install -D -m 0644 packaging/squid_http_port.conf %{buildroot}/etc/squid/squid_http_port.conf
 install -D -m 0644 packaging/squid_lans.conf %{buildroot}/etc/squid/squid_lans.conf
 install -D -m 0644 packaging/web_proxy.acl %{buildroot}/var/clearos/base/access_control/public/web_proxy
+install -D -m 0644 packaging/web_proxy.conf %{buildroot}/etc/clearos/web_proxy.conf
 install -D -m 0644 packaging/web_proxy_default.conf %{buildroot}/etc/clearos/storage.d/web_proxy_default.conf
 
 %post
@@ -113,4 +114,5 @@ exit 0
 %config(noreplace) /etc/squid/squid_http_port.conf
 %config(noreplace) /etc/squid/squid_lans.conf
 /var/clearos/base/access_control/public/web_proxy
+/etc/clearos/web_proxy.conf
 /etc/clearos/storage.d/web_proxy_default.conf
