@@ -9,7 +9,7 @@
  * @author     ClearFoundation <developer@clearfoundation.com>
  * @copyright  2011 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
- * @link       http://www.clearfoundation.com/docs/developer/apps/base/
+ * @link       http://www.clearfoundation.com/docs/developer/apps/web_proxy/
  */
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -43,10 +43,10 @@ $this->lang->load('network');
 echo form_open('web_proxy/warning');
 echo form_header(lang('web_proxy_web_proxy'));
 
-echo field_view(lang('web_proxy_warning_message'), $message, 'warning');
+echo field_view(lang('base_status'), $message, 'warning');
 echo field_view(lang('web_proxy_web_address'), $url, 'web_address');
-echo field_view(lang('web_proxy_ip'), $ip, 'ip');
-echo field_view(lang('web_proxy_connection_status'), '<div class="theme-loading-small"></div>', 'status');
+echo field_view(lang('network_ip'), $ip, 'ip');
+echo field_view(lang('web_proxy_internet_connection_status'), '<div class="theme-loading-small"></div>', 'status');
 
 echo form_footer();
 echo form_close();

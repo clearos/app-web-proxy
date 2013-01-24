@@ -128,7 +128,7 @@ class Squid_Firewall extends Firewall
 
         $list = array();
 
-        $rules = $this->get_rules();
+        $rules = $this->_get_rules();
 
         foreach ($rules as $rule) {
             if (!($rule->get_flags() & (Rule::PROXY_BYPASS)))
@@ -213,7 +213,7 @@ class Squid_Firewall extends Firewall
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        return $this->get_state('SQUID_TRANSPARENT');
+        return $this->_get_state('SQUID_TRANSPARENT');
     }
 
     /**
@@ -239,7 +239,7 @@ class Squid_Firewall extends Firewall
         $rule->set_address($address);
         $rule->set_flags(Rule::PROXY_BYPASS | Rule::ENABLED);
 
-        $this->add_rule($rule);
+        $this->_add_rule($rule);
     }
 
     /**
@@ -261,7 +261,7 @@ class Squid_Firewall extends Firewall
 
         $rule->set_flags(Rule::PROXY_BYPASS);
         $rule->set_address($address);
-        $this->delete_rule($rule);
+        $this->_delete_rule($rule);
     }
 
     /**
@@ -277,7 +277,7 @@ class Squid_Firewall extends Firewall
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        $this->set_state($state, 'SQUID_TRANSPARENT');
+        $this->_set_state($state, 'SQUID_TRANSPARENT');
     }
 
     /**
@@ -301,16 +301,16 @@ class Squid_Firewall extends Firewall
         $rule->set_address($address);
         $rule->set_flags(Rule::PROXY_BYPASS);
 
-        if (!($rule = $this->find_rule($rule)))
+        if (!($rule = $this->_find_rule($rule)))
             return;
 
-        $this->delete_rule($rule);
+        $this->_delete_rule($rule);
 
         if ($state)
             $rule->enable();
         else
             $rule->disable();
 
-        $this->add_rule($rule);
+        $this->_add_rule($rule);
     }
 }

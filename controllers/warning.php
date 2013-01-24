@@ -85,7 +85,9 @@ class Warning extends ClearOS_Controller
             return;
         }
 
-        $data['message'] = lang('web_proxy_warning_' . strtolower($code));
+        $warning_key = 'web_proxy_warning_' . strtolower($code);
+
+        $data['message'] = lang($warning_key);
         $data['url'] = base64_decode(strtr($url, '-_.', '+/='));
         $data['ip'] = base64_decode(strtr($ip, '-_.', '+/='));
         $data['ftp_reply'] = base64_decode(strtr($ftp_reply, '-_.', '+/='));

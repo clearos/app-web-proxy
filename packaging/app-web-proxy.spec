@@ -22,7 +22,7 @@ Group: ClearOS/Libraries
 Requires: app-base-core
 Requires: app-base-core >= 1:1.4.7
 Requires: app-network-core >= 1:1.2.7
-Requires: app-firewall-core
+Requires: app-firewall-core >= 1:1.4.15
 Requires: app-web-proxy-plugin-core
 Requires: app-samba-common-core
 Requires: app-storage-core >= 1:1.4.7

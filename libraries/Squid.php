@@ -46,6 +46,7 @@ require_once $bootstrap . '/bootstrap.php';
 // T R A N S L A T I O N S
 ///////////////////////////////////////////////////////////////////////////////
 
+clearos_load_language('base');
 clearos_load_language('web_proxy');
 clearos_load_language('network');
 
@@ -435,7 +436,7 @@ class Squid extends Daemon
 
                 if ($items[1] == "program") {
                     if ($items[0] != "basic")
-                        throw new Engine_Exception(lang('proxy_custom_configuration_detected'));
+                        throw new Engine_Exception(lang('web_proxy_custom_configuration_detected'));
                     $info['program'] = $items[2];
                 } else if ($items[1] == "children") {
                     $info['children'] = $items[2];
@@ -564,8 +565,8 @@ class Squid extends Daemon
     {
         $type = array(
             'group' => lang('web_proxy_group'),
-            'src' => lang('web_proxy_ip'),
-            'arp' => lang('web_proxy_mac')
+            'src' => lang('network_ip'),
+            'arp' => lang('network_mac_address')
         );
 
         return $type;
@@ -795,18 +796,6 @@ class Squid extends Daemon
             $this->_set_parameter('http_access allow webconfig_lan', '', self::CONSTANT_NO_OFFSET, '');
             $this->_set_parameter('http_access allow localhost', '', self::CONSTANT_NO_OFFSET, '');
         }
-
-        // KLUDGE: DansGuardian does not like having authorization plugins 
-        // enabled if Squid is not configured with authentication.  
-
-        // FIXME
-        if (file_exists(COMMON_CORE_DIR . "/api/DansGuardianAv.class.php")) {
-            require_once('DansGuardianAv.class.php');
-            $plugins = ($state) ? array("dummy_data_for_now") : array();
-            $dgav = new DansGuardian();
-            $dgav->SetAuthorizationPlugins($plugins);
-            $dgav->Reset();
-        }
     }
 
     /**
@@ -851,7 +840,8 @@ class Squid extends Daemon
 
                 // TODO: hard coded web_proxy_plugin below
                 $lines .= "# NTLM\n";
-                $lines .= "auth_param ntlm program /usr/bin/ntlm_auth --helper-protocol=squid-2.5-ntlmssp --require-membership-of=$domain+web_proxy_plugin\n";
+                $lines .= "auth_param ntlm program /usr/bin/ntlm_auth --helper-protocol=squid-2.5-ntlmssp " .
+                    "--require-membership-of=$domain+web_proxy_plugin\n";
                 $lines .= "auth_param ntlm children $children\n";
                 $lines .= "auth_param ntlm keep_alive on\n";
             }
@@ -879,7 +869,7 @@ class Squid extends Daemon
 
         Validation_Exception::is_valid($this->validate_cache_size($size));
 
-        $size = round($size / 1024 ); // MB for cache_dir
+        $size = round($size / 1024); // MB for cache_dir
         $this->_set_parameter('cache_dir', $size, 3, self::DEFAULT_CACHE_DIR_VALUE);
     }
 
@@ -953,9 +943,6 @@ class Squid extends Daemon
     }
 
     /**
-     * Returns redirect_program parameter.
-     *
-    /**
      * Adds (or updates) a time-based ACL.
      *
      * @param string  $name       ACL name
@@ -985,12 +972,12 @@ class Squid extends Daemon
             $acls = $this->get_acl_list();
             foreach ($acls as $acl) {
                 if ($name == $acl['name'])
-                    throw new Validation_Exception(lang('web_proxy_duplicate_acl'));
+                    throw new Validation_Exception(lang('web_proxy_access_control_list_exists'));
             }
         }
 
         if ($type != 'allow' && $type != 'deny')
-            throw new Validation_Exception(lang('web_proxy_type_invalid'));
+            throw new Validation_Exception(lang('base_parameter_invalid'));
 
         $timelist = $this->get_time_definition_list();
         $timevalid = FALSE;
@@ -1014,7 +1001,7 @@ class Squid extends Daemon
 
             if (preg_match("/^(.*)-(.*)$/i", trim($ip), $match)) {
                 if (! Network_Utils::is_valid_ip(trim($match[1])))
-                    throw new Validation_Exception(lang('nework_ip_invalid'));
+                    throw new Validation_Exception(lang('network_ip_invalid'));
                 if (! Network_Utils::is_valid_ip(trim($match[2])))
                     throw new Validation_Exception(lang('network_ip_invalid'));
             } else {
@@ -1031,7 +1018,7 @@ class Squid extends Daemon
             $mac = trim($mac);
 
             if (! Network_Utils::is_valid_mac($mac))
-                throw new Validation_Exception(lang('network_mac_invalid'));
+                throw new Validation_Exception(lang('network_mac_address_invalid'));
 
             $macs .= ' ' . $mac;
         }
@@ -1063,7 +1050,7 @@ class Squid extends Daemon
             if (! $match)
                 $file->add_lines($replacement);
         } else {
-            throw new Engine_Exception(lang('web_proxy_empty_id_array'));
+            throw new Engine_Exception(lang('base_ooops'));
         }
 
         $file = new File(self::FILE_HTTP_ACCESS_CONFIG);
@@ -1159,7 +1146,7 @@ class Squid extends Daemon
             $times = $this->get_time_definition_list();
             foreach ($times as $time) {
                 if ($name == $time['name'])
-                    throw new Validation_Exception(lang('web_proxy_duplicate_time'));
+                    throw new Validation_Exception(lang('web_proxy_time_definition_exists'));
             }
         }
 
@@ -1168,7 +1155,7 @@ class Squid extends Daemon
         $formatted_dow = implode('', array_values($dow));
 
         if (strtotime($start) > strtotime($end))
-            throw new Validation_Exception(lang('web_proxy_time_end_later_start_invalid'));
+            throw new Validation_Exception(lang('web_proxy_start_time_later_than_end_time'));
         else
             $time_range = $start . '-' . $end; 
         
@@ -1197,7 +1184,8 @@ class Squid extends Daemon
     /**
      * Deletes a parameter.
      *
-     * @param string $key parameter
+     * @param string $key    parameter
+     * @param string $config configuration file
      *
      * @access private
      * @return void
@@ -1260,6 +1248,8 @@ class Squid extends Daemon
 
     /**
      * Loads configlet.
+     *
+     * @param string $configlet configlet file
      *
      * @access private
      * @return void
@@ -1435,7 +1425,7 @@ class Squid extends Daemon
             return;
 
         if ( (!preg_match('/^\d+/', $size)) || ($size < 0) )
-            return lang('web_proxy_maximum_file_download_size_invalid');
+            return lang('web_proxy_size_invalid');
     }
 
     /**
@@ -1451,7 +1441,7 @@ class Squid extends Daemon
         clearos_profile(__METHOD__, __LINE__);
 
         if ( (!preg_match('/^\d+/', $size)) || ($size < 0) )
-            return lang('web_proxy_maximum_object_size_invalid');
+            return lang('web_proxy_size_invalid');
     }
 
     /**
@@ -1467,7 +1457,7 @@ class Squid extends Daemon
         clearos_profile(__METHOD__, __LINE__);
 
         if (!preg_match("/^([A-Za-z0-9\-\.\_]+)$/", $name))
-            return lang('web_proxy_invalid_name');
+            return lang('web_proxy_name_invalid');
     }
 
     /**
@@ -1498,6 +1488,6 @@ class Squid extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
         if ((int)$time < 0)
-            return lang('web_proxy_invalid_time_definition');
+            return lang('web_proxy_time_definition_invalid');
     }
 }
