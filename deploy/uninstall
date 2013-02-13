@@ -1,0 +1,6 @@
+#!/bin/sh
+
+if [ -d /var/clearos/web_proxy/errors ]; then
+    logger -p local6.notice -t installer "app-web-proxy-core - removing template files"
+    rm -f /var/clearos/web_proxy/errors/*
+fi
