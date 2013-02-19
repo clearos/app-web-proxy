@@ -63,4 +63,7 @@ done
 if [ -n "$LANNETS" ]; then
 	echo "acl webconfig_lan src $LANNETS $EXTRALANS" >> /etc/squid/squid_lans.conf
 	echo "acl webconfig_to_lan dst $LANNETS $EXTRALANS" >> /etc/squid/squid_lans.conf
+else
+	echo "acl webconfig_lan src 192.168.0.0/16 10.0.0.0/8" >> /etc/squid/squid_lans.conf
+	echo "acl webconfig_to_lan dst 192.168.0.0/16 10.0.0.0/8" >> /etc/squid/squid_lans.conf
 fi
