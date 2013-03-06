@@ -99,7 +99,7 @@ class Warning extends ClearOS_Controller
         // Load views
         //-----------
 
-        $page['type'] = MY_Page::TYPE_SPLASH;
+        $page['type'] = MY_Page::TYPE_SPLASH_ORGANIZATION;
 
         $this->page->view_form('web_proxy/warning', $data, lang('base_warning'), $page);
     }
@@ -158,7 +158,7 @@ class Warning extends ClearOS_Controller
         // Load views
         //-----------
 
-        $page['type'] = MY_Page::TYPE_SPLASH;
+        $page['type'] = MY_Page::TYPE_SPLASH_ORGANIZATION;
 
         $this->page->view_form('web_proxy/configuration', $data, lang('web_proxy_web_proxy_configuration'), $page);
     }
