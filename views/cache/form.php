@@ -49,8 +49,10 @@ if ($form_type === 'edit') {
     $read_only = TRUE;
     $buttons = array(
         anchor_edit('/app/web_proxy/caching/edit'),
+        anchor_custom('/app/web_proxy/caching/delete', lang('web_proxy_reset_cache')),
     );
 //        anchor_javascript('reset_cache', lang('web_proxy_reset_cache'), 'high')
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////

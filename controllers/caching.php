@@ -206,6 +206,26 @@ class Caching extends ClearOS_Controller
     }
 
     /**
+     * Delete cache dialog
+     *
+     * @return view
+     */
+
+    function delete()
+    {
+        // Load dependencies
+        //------------------
+        $this->load->library('web_proxy/Squid');
+    
+        $confirm_uri = '/app/web_proxy/caching/reset';
+        $cancel_uri = '/app/web_proxy';
+        $items = array(lang('web_proxy_cache'));
+
+        $this->page->view_confirm_delete($confirm_uri, $cancel_uri, $items);
+    }
+
+
+    /**
      * Resets the cache.
      *
      * @return JSON
@@ -224,6 +244,7 @@ class Caching extends ClearOS_Controller
         try {
             $data['error_code'] = 0;
             $this->squid->clear_cache();
+            redirect('/web_proxy');
         } catch (Exception $e) {
             $data['error_code'] = clearos_exception_code($e);
             $data['error_message'] = clearos_exception_message($e);
