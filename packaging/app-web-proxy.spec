@@ -1,7 +1,7 @@
 
 Name: app-web-proxy
 Epoch: 1
-Version: 1.4.20
+Version: 1.4.22
 Release: 1%{dist}
 Summary: Web Proxy
 License: GPLv3
@@ -46,6 +46,7 @@ install -d -m 0755 %{buildroot}/etc/clearos/web_proxy.d
 install -d -m 0755 %{buildroot}/var/clearos/web_proxy
 install -d -m 0755 %{buildroot}/var/clearos/web_proxy/backup
 install -d -m 0755 %{buildroot}/var/clearos/web_proxy/errors
+install -D -m 0755 packaging/app-web-proxy-clear-cache %{buildroot}/usr/sbin/app-web-proxy-clear-cache
 install -D -m 0644 packaging/authorize %{buildroot}/etc/clearos/web_proxy.d/authorize
 install -D -m 0644 packaging/filewatch-web-proxy-configuration.conf %{buildroot}/etc/clearsync.d/filewatch-web-proxy-configuration.conf
 install -D -m 0644 packaging/filewatch-web-proxy-network.conf %{buildroot}/etc/clearsync.d/filewatch-web-proxy-network.conf
@@ -104,6 +105,7 @@ exit 0
 /usr/clearos/apps/web_proxy/deploy
 /usr/clearos/apps/web_proxy/language
 /usr/clearos/apps/web_proxy/libraries
+/usr/sbin/app-web-proxy-clear-cache
 %config(noreplace) /etc/clearos/web_proxy.d/authorize
 /etc/clearsync.d/filewatch-web-proxy-configuration.conf
 /etc/clearsync.d/filewatch-web-proxy-network.conf

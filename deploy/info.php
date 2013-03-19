@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 $app['basename'] = 'web_proxy';
-$app['version'] = '1.4.20';
+$app['version'] = '1.4.22';
 $app['release'] = '1';
 $app['vendor'] = 'ClearFoundation';
 $app['packager'] = 'ClearFoundation';
@@ -58,6 +58,10 @@ $app['core_directory_manifest'] = array(
 );
 
 $app['core_file_manifest'] = array(
+    'app-web-proxy-clear-cache' => array(
+        'target' => '/usr/sbin/app-web-proxy-clear-cache',
+        'mode' => '0755',
+    ),
     'squid.php'=> array('target' => '/var/clearos/base/daemon/squid.php'),
     'web_proxy.acl'=> array('target' => '/var/clearos/base/access_control/public/web_proxy'),
     'web_proxy_default.conf' => array ( 'target' => '/etc/clearos/storage.d/web_proxy_default.conf' ),

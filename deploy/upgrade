@@ -2,6 +2,11 @@
 
 TIMESTAMP=`date "+%b-%d-%Y-%T"`
 
+# Sudoers
+#--------
+
+/usr/sbin/addsudo /usr/sbin/app-web-proxy-clear-cache app-web-proxy-core
+
 # PAM check
 #--------------------------------------------------------------------------
 

@@ -238,22 +238,12 @@ class Caching extends ClearOS_Controller
 
         $this->load->library('web_proxy/Squid');
 
-        // Run synchronize
-        //----------------
-
         try {
-            $data['error_code'] = 0;
-            $this->squid->clear_cache();
+            $this->squid->run_clear_cache();
             redirect('/web_proxy');
         } catch (Exception $e) {
-            $data['error_code'] = clearos_exception_code($e);
-            $data['error_message'] = clearos_exception_message($e);
+            $this->page->view_exception($e);
+            return;
         }
-
-        // Return status message
-        //----------------------
-
-        $this->output->set_header("Content-Type: application/json");
-        $this->output->set_output(json_encode($data));
     }
 }

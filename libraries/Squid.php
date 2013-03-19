@@ -120,6 +120,7 @@ class Squid extends Daemon
     const FILE_ADZAPPER = '/usr/sbin/adzapper';
     const FILE_APP_CONFIG = '/etc/clearos/web_proxy.conf';
     const PATH_SPOOL = '/var/spool/squid';
+    const COMMAND_CLEAR_CACHE = '/usr/sbin/app-web-proxy-clear-cache';
 
     const CONSTANT_NO_OFFSET = -1;
     const CONSTANT_UNLIMITED = 0;
@@ -218,21 +219,42 @@ class Squid extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
+        // TODO: migrate shell calls to folder class
+
+        $shell = new Shell();
+        $spool_folder = new Folder(self::PATH_SPOOL, TRUE);
+        $hold_folder = new Folder(self::PATH_SPOOL . '/old', TRUE);
+
+        if ($hold_folder->exists()) 
+            $shell->execute('/bin/rm', '-rf ' . self::PATH_SPOOL . '/old', TRUE);
+
+        $hold_folder->create('root', 'root', '0755');
+
+        // Shutdown Squid
+        //---------------
+
         $was_running = $this->get_running_state();
 
         if ($was_running)
             $this->set_running_state(FALSE);
 
-        $shell = new Shell();
-        $shell->execute('/bin/mv', '/var/spool/squid /var/spool/squid.delete', TRUE);
+        // Move subdirectories into temporary old directory
+        //-------------------------------------------------
+        
+        $spool_subdir_list = $spool_folder->get_listing();
 
-        $folder = new Folder(self::PATH_SPOOL);
-        $folder->create('squid', 'squid', '0750');
+        foreach ($spool_subdir_list as $spool_subdir) {
+            if ($spool_subdir !== 'old')
+                $shell->execute('/bin/mv', '/var/spool/squid/' . $spool_subdir . ' /var/spool/squid/old', TRUE);
+        }
+
+        // Restart Squid
+        //--------------
 
         if ($was_running)
             $this->set_running_state(TRUE);
 
-        $shell->execute('/bin/rm', '-rf /var/spool/squid.delete', TRUE);
+        $shell->execute('/bin/rm', '-rf ' . self::PATH_SPOOL . '/old', TRUE);
     }
 
     /**
@@ -750,6 +772,25 @@ class Squid extends Daemon
         }
 
         return FALSE;
+    }
+
+    /**
+     * Runs clear cache.
+     *
+     * @param boolean $background background flag
+     *
+     * @return void
+     * @throws Engine_Exception
+     */
+
+    public function run_clear_cache($background = TRUE)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        $options['background'] = TRUE;
+
+        $shell = new Shell();
+        $shell->execute(self::COMMAND_CLEAR_CACHE, '', TRUE, $options);
     }
 
     /**
