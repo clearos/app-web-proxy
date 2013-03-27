@@ -1,7 +1,7 @@
 
 Name: app-web-proxy
 Epoch: 1
-Version: 1.4.22
+Version: 1.4.30
 Release: 1%{dist}
 Summary: Web Proxy
 License: GPLv3
@@ -20,7 +20,7 @@ Summary: Web Proxy - Core
 License: LGPLv3
 Group: ClearOS/Libraries
 Requires: app-base-core
-Requires: app-base-core >= 1:1.4.7
+Requires: app-base-core >= 1:1.4.25
 Requires: app-network-core >= 1:1.2.7
 Requires: app-firewall-core >= 1:1.4.15
 Requires: app-web-proxy-plugin-core

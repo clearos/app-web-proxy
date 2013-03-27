@@ -855,7 +855,12 @@ class Squid extends Daemon
         $realm = $name . ' - ' . lang('web_proxy_web_proxy');
 
         $tuning = $this->get_tuning();
-        $children = $tuning['children'];
+
+        // TODO: deal with custom tuning
+        if ($tuning['level'] == Tuning::LEVEL_CUSTOM)
+            $children = 60;
+        else
+            $children = $tuning['children'];
 
         // Basic authentication
         //---------------------

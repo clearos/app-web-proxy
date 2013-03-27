@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 $app['basename'] = 'web_proxy';
-$app['version'] = '1.4.22';
+$app['version'] = '1.4.30';
 $app['release'] = '1';
 $app['vendor'] = 'ClearFoundation';
 $app['packager'] = 'ClearFoundation';
@@ -40,7 +40,7 @@ $app['requires'] = array(
 );
 
 $app['core_requires'] = array(
-    'app-base-core >= 1:1.4.7',
+    'app-base-core >= 1:1.4.25',
     'app-network-core >= 1:1.2.7',
     'app-firewall-core >= 1:1.4.15',
     'app-web-proxy-plugin-core',
