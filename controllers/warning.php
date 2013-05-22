@@ -3,9 +3,9 @@
 /**
  * Web proxy warning controller.
  *
- * @category   Apps
- * @package    Web_Proxy
- * @subpackage Controllers
+ * @category   apps
+ * @package    web-proxy
+ * @subpackage controllers
  * @author     ClearFoundation <developer@clearfoundation.com>
  * @copyright  2011 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
@@ -43,9 +43,9 @@ use \Exception as Exception;
 /**
  * Web proxy warning controller.
  *
- * @category   Apps
- * @package    Web_Proxy
- * @subpackage Controllers
+ * @category   apps
+ * @package    web-proxy
+ * @subpackage controllers
  * @author     ClearFoundation <developer@clearfoundation.com>
  * @copyright  2011 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later

@@ -3,9 +3,9 @@
 /**
  * Web proxy warning page.
  *
- * @category   Apps
- * @package    Web_Proxy
- * @subpackage Helpers
+ * @category   apps
+ * @package    web-proxy
+ * @subpackage configuration
  * @author     ClearFoundation <developer@clearfoundation.com>
  * @copyright  2011 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
