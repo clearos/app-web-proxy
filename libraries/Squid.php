@@ -1074,24 +1074,26 @@ class Squid extends Daemon
 
         $file = new File(self::FILE_ACLS_CONFIG, TRUE);
 
+        $file->delete_lines("/acl cleargroup-$name\s+.*/", $replacement);
+
         if (strlen($addgroup) > 0) {
             // Group based
             $replacement = "acl cleargroup-$name external system_group " . $addgroup . "\n";
-            $match = $file->replace_lines("/acl cleargroup-$name external system_group.*$/", $replacement);
+            $match = $file->replace_lines("/acl cleargroup-$name\s+.*/", $replacement);
 
             if (! $match)
                 $file->add_lines($replacement);
         } else if (strlen($ips) > 0) {
             // IP based
             $replacement = "acl cleargroup-$name src " . trim($ips) . "\n";
-            $match = $file->replace_lines("/acl cleargroup-$name src .*$/", $replacement);
+            $match = $file->replace_lines("/acl cleargroup-$name\s+.*/", $replacement);
 
             if (! $match)
                 $file->add_lines($replacement);
         } else if (strlen($macs) > 0) {
             // IP based
             $replacement = "acl cleargroup-$name arp " . trim($macs) . "\n";
-            $match = $file->replace_lines("/acl cleargroup-$name arp .*$/", $replacement);
+            $match = $file->replace_lines("/acl cleargroup-$name\s+.*/", $replacement);
 
             if (! $match)
                 $file->add_lines($replacement);
