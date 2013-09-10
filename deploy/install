@@ -22,10 +22,5 @@ chmod 640 /etc/squid/squid.conf
 # Set boot policy
 #----------------
 
-logger -p local6.notice -t installer "app-web-proxy-core - enabling web proxy server"
-/sbin/chkconfig squid on
-
-# Reload clearsyncd
-#------------------
-
-/sbin/service clearsyncd condrestart >/dev/null 2>&1
+logger -p local6.notice -t installer "app-web-proxy-core - disabling web proxy server"
+/sbin/chkconfig squid off
