@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 $app['basename'] = 'web_proxy';
-$app['version'] = '1.4.30';
+$app['version'] = '1.5.5';
 $app['release'] = '1';
 $app['vendor'] = 'ClearFoundation';
 $app['packager'] = 'ClearFoundation';
@@ -65,7 +65,6 @@ $app['core_file_manifest'] = array(
     'squid.php'=> array('target' => '/var/clearos/base/daemon/squid.php'),
     'web_proxy.acl'=> array('target' => '/var/clearos/base/access_control/public/web_proxy'),
     'web_proxy_default.conf' => array ( 'target' => '/etc/clearos/storage.d/web_proxy_default.conf' ),
-    'web_proxy.conf' => array ( 'target' => '/etc/clearos/web_proxy.conf' ),
     'filewatch-web-proxy-configuration.conf'=> array('target' => '/etc/clearsync.d/filewatch-web-proxy-configuration.conf'),
     'filewatch-web-proxy-network.conf'=> array('target' => '/etc/clearsync.d/filewatch-web-proxy-network.conf'),
     'authorize' => array(
@@ -98,6 +97,11 @@ $app['core_file_manifest'] = array(
     ),
     'squid_lans.conf' => array(
         'target' => '/etc/squid/squid_lans.conf',
+        'config' => TRUE,
+        'config_params' => 'noreplace',
+    ),
+    'web_proxy.conf' => array (
+        'target' => '/etc/clearos/web_proxy.conf',
         'config' => TRUE,
         'config_params' => 'noreplace',
     ),

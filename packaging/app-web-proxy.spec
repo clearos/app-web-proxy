@@ -1,7 +1,7 @@
 
 Name: app-web-proxy
 Epoch: 1
-Version: 1.4.30
+Version: 1.5.5
 Release: 1%{dist}
 Summary: Web Proxy
 License: GPLv3
@@ -116,5 +116,5 @@ exit 0
 %config(noreplace) /etc/squid/squid_http_port.conf
 %config(noreplace) /etc/squid/squid_lans.conf
 /var/clearos/base/access_control/public/web_proxy
-/etc/clearos/web_proxy.conf
+%config(noreplace) /etc/clearos/web_proxy.conf
 /etc/clearos/storage.d/web_proxy_default.conf
