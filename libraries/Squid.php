@@ -872,7 +872,8 @@ class Squid extends Daemon
         $lines .= "auth_param basic realm $realm\n";
         $lines .= "auth_param basic credentialsttl 2 hours\n";
         $lines .= "auth_param basic program $this->file_pam_auth\n";
-        $lines .= "external_acl_type system_group %LOGIN $this->file_squid_unix_group -p\n";
+        // TODO - IPv4 hack below
+        $lines .= "external_acl_type system_group ipv4 %LOGIN $this->file_squid_unix_group -p\n";
 
         // Add NTLM if desired and possible
         //---------------------------------

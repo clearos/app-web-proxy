@@ -1,7 +1,7 @@
 
 Name: app-web-proxy
 Epoch: 1
-Version: 1.5.10
+Version: 1.5.11
 Release: 1%{dist}
 Summary: Web Proxy
 License: GPLv3
@@ -96,7 +96,6 @@ exit 0
 %files core
 %defattr(-,root,root)
 %exclude /usr/clearos/apps/web_proxy/packaging
-%exclude /usr/clearos/apps/web_proxy/tests
 %dir /usr/clearos/apps/web_proxy
 %dir /etc/clearos/web_proxy.d
 %dir /var/clearos/web_proxy
