@@ -121,6 +121,8 @@ class Settings extends ClearOS_Controller
                     $this->squid->set_user_authentication_state($this->input->post('user_authentication'));
                 }
 
+                $this->squid->reset(TRUE);
+
                 $this->page->set_status_updated();
                 redirect('/web_proxy/settings');
             } catch (Exception $e) {

@@ -96,6 +96,8 @@ class Caching extends ClearOS_Controller
                 $this->squid->set_maximum_object_size($this->input->post('object'));
                 $this->squid->set_maximum_file_download_size($this->input->post('download'));
 
+                $this->squid->reset(TRUE);
+
                 $this->page->set_status_updated();
                 redirect('/web_proxy/caching');
             } catch (Exception $e) {

@@ -47,7 +47,6 @@ $app['core_requires'] = array(
     'app-web-proxy-plugin-core',
     'app-samba-common-core',
     'app-storage-core >= 1:1.4.7',
-    'csplugin-filewatch',
     'squid >= 3.1.10',
 );
 
@@ -66,7 +65,6 @@ $app['core_file_manifest'] = array(
     'squid.php'=> array('target' => '/var/clearos/base/daemon/squid.php'),
     'web_proxy.acl'=> array('target' => '/var/clearos/base/access_control/public/web_proxy'),
     'web_proxy_default.conf' => array ( 'target' => '/etc/clearos/storage.d/web_proxy_default.conf' ),
-    'filewatch-web-proxy-configuration.conf'=> array('target' => '/etc/clearsync.d/filewatch-web-proxy-configuration.conf'),
     'network-configuration-event'=> array(
         'target' => '/var/clearos/events/network_configuration/web_proxy',
         'mode' => '0755'

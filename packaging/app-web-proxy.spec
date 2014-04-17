@@ -27,7 +27,6 @@ Requires: app-firewall-core >= 1:1.4.15
 Requires: app-web-proxy-plugin-core
 Requires: app-samba-common-core
 Requires: app-storage-core >= 1:1.4.7
-Requires: csplugin-filewatch
 Requires: squid >= 3.1.10
 
 %description core
@@ -49,7 +48,6 @@ install -d -m 0755 %{buildroot}/var/clearos/web_proxy/backup
 install -d -m 0755 %{buildroot}/var/clearos/web_proxy/errors
 install -D -m 0755 packaging/app-web-proxy-clear-cache %{buildroot}/usr/sbin/app-web-proxy-clear-cache
 install -D -m 0644 packaging/authorize %{buildroot}/etc/clearos/web_proxy.d/authorize
-install -D -m 0644 packaging/filewatch-web-proxy-configuration.conf %{buildroot}/etc/clearsync.d/filewatch-web-proxy-configuration.conf
 install -D -m 0755 packaging/network-configuration-event %{buildroot}/var/clearos/events/network_configuration/web_proxy
 install -D -m 0644 packaging/squid.php %{buildroot}/var/clearos/base/daemon/squid.php
 install -D -m 0644 packaging/squid_acls.conf %{buildroot}/etc/squid/squid_acls.conf
@@ -107,7 +105,6 @@ exit 0
 /usr/clearos/apps/web_proxy/libraries
 /usr/sbin/app-web-proxy-clear-cache
 %config(noreplace) /etc/clearos/web_proxy.d/authorize
-/etc/clearsync.d/filewatch-web-proxy-configuration.conf
 /var/clearos/events/network_configuration/web_proxy
 /var/clearos/base/daemon/squid.php
 %config(noreplace) /etc/squid/squid_acls.conf

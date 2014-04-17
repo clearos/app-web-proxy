@@ -8,8 +8,6 @@
 [ -e /etc/sysconfig/squid ] && source /etc/sysconfig/squid
 [ -e /etc/init.d/functions-automagic ] && source /etc/init.d/functions-automagic
 
-/usr/bin/logger -p local6.notice -t web_proxy "network change detected - updating configuration" 
-
 #-------------------------------------------------------------------
 # Generate error pages
 #-------------------------------------------------------------------
@@ -36,23 +34,33 @@ fi
 # http_port configuration 
 #-------------------------------------------------------------------
 
+RELOAD=""
+
 if [ "$SQUID_TRANSPARENT" == "on" ]; then
 	TRANSPARENT=" transparent"
 else
 	TRANSPARENT=""
 fi
 
-echo "# Created automatically based on network configuration" > /etc/squid/squid_http_port.conf
+echo "# Created automatically based on network configuration" > /etc/squid/squid_http_port.conf.clearos
 
 for IP in $AUTOMAGIC_LANIPS 127.0.0.1; do
-	echo "http_port $IP:3128$TRANSPARENT" >> /etc/squid/squid_http_port.conf
+	echo "http_port $IP:3128$TRANSPARENT" >> /etc/squid/squid_http_port.conf.clearos
 done
+
+if diff /etc/squid/squid_http_port.conf.clearos /etc/squid/squid_http_port.conf >/dev/null 2>&1; then
+    rm -f /etc/squid/squid_http_port.conf.clearos
+else
+    /usr/bin/logger -p local6.notice -t web_proxy "network change detected - updating port configuration" 
+    mv /etc/squid/squid_http_port.conf.clearos /etc/squid/squid_http_port.conf
+    RELOAD="yes"
+fi
 
 #-------------------------------------------------------------------
 # LAN ACL definitions
 #-------------------------------------------------------------------
 
-echo "# Created automatically based on network configuration" > /etc/squid/squid_lans.conf
+echo "# Created automatically based on network configuration" > /etc/squid/squid_lans.conf.clearos
 
 LANNETS=""
 
@@ -61,9 +69,26 @@ for LAN in $AUTOMAGIC_LANNETS; do
 done
 
 if [ -n "$LANNETS" ]; then
-	echo "acl webconfig_lan src $LANNETS $EXTRALANS" >> /etc/squid/squid_lans.conf
-	echo "acl webconfig_to_lan dst $LANNETS $EXTRALANS" >> /etc/squid/squid_lans.conf
+	echo "acl webconfig_lan src $LANNETS $EXTRALANS" >> /etc/squid/squid_lans.conf.clearos
+	echo "acl webconfig_to_lan dst $LANNETS $EXTRALANS" >> /etc/squid/squid_lans.conf.clearos
 else
-	echo "acl webconfig_lan src 192.168.0.0/16 10.0.0.0/8" >> /etc/squid/squid_lans.conf
-	echo "acl webconfig_to_lan dst 192.168.0.0/16 10.0.0.0/8" >> /etc/squid/squid_lans.conf
+	echo "acl webconfig_lan src 192.168.0.0/16 10.0.0.0/8" >> /etc/squid/squid_lans.conf.clearos
+	echo "acl webconfig_to_lan dst 192.168.0.0/16 10.0.0.0/8" >> /etc/squid/squid_lans.conf.clearos
+fi
+
+if diff /etc/squid/squid_lans.conf.clearos /etc/squid/squid_lans.conf >/dev/null 2>&1; then
+    rm -f /etc/squid/squid_lans.conf.clearos
+else
+    /usr/bin/logger -p local6.notice -t web_proxy "network change detected - updating LAN configuration" 
+    mv /etc/squid/squid_lans.conf.clearos /etc/squid/squid_lans.conf
+    RELOAD="yes"
+fi
+
+#-------------------------------------------------------------------
+# Reload if changes occurred
+#-------------------------------------------------------------------
+
+if [ "$RELOAD" == "yes" ]; then
+    /usr/bin/logger -p local6.notice -t web_proxy "network change detected - reloading web proxy"
+    /sbin/service squid reload >/dev/null 2>&1
 fi
