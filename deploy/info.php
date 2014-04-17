@@ -41,7 +41,8 @@ $app['requires'] = array(
 
 $app['core_requires'] = array(
     'app-base-core >= 1:1.4.25',
-    'app-network-core >= 1:1.2.7',
+    'app-network-core >= 1:1.5.16',
+    'app-events-core',
     'app-firewall-core >= 1:1.4.15',
     'app-web-proxy-plugin-core',
     'app-samba-common-core',
@@ -66,7 +67,10 @@ $app['core_file_manifest'] = array(
     'web_proxy.acl'=> array('target' => '/var/clearos/base/access_control/public/web_proxy'),
     'web_proxy_default.conf' => array ( 'target' => '/etc/clearos/storage.d/web_proxy_default.conf' ),
     'filewatch-web-proxy-configuration.conf'=> array('target' => '/etc/clearsync.d/filewatch-web-proxy-configuration.conf'),
-    'filewatch-web-proxy-network.conf'=> array('target' => '/etc/clearsync.d/filewatch-web-proxy-network.conf'),
+    'network-configuration-event'=> array(
+        'target' => '/var/clearos/events/network_configuration/web_proxy',
+        'mode' => '0755'
+    ),
     'authorize' => array(
         'target' => '/etc/clearos/web_proxy.d/authorize',
         'mode' => '0644',
