@@ -161,8 +161,15 @@ class Squid extends Daemon
 
         $lib = (file_exists('/usr/lib64/squid')) ? 'lib64' : 'lib';
 
-        $this->file_pam_auth = "/usr/$lib/squid/pam_auth";
-        $this->file_squid_unix_group = "/usr/$lib/squid/squid_unix_group";
+        if (clearos_version() >= 7)
+            $this->file_pam_auth = "/usr/$lib/squid/basic_pam_auth";
+        else
+            $this->file_pam_auth = "/usr/$lib/squid/pam_auth";
+
+        if (clearos_version() >= 7)
+            $this->file_squid_unix_group = "/usr/$lib/squid/ext_unix_group_acl";
+        else
+            $this->file_squid_unix_group = "/usr/$lib/squid/squid_unix_group";
     }
 
     /**
