@@ -26,9 +26,9 @@ $app['subcategory'] = lang('base_subcategory_content_filter_and_proxy');
 /////////////////////////////////////////////////////////////////////////////
 
 $app['controllers']['web_proxy']['title'] = lang('web_proxy_app_name');
+$app['controllers']['authentication']['title'] = lang('web_proxy_authentication');
 $app['controllers']['settings']['title'] = lang('base_settings');
 $app['controllers']['policy']['title'] = lang('base_app_policy');
-$app['controllers']['caching']['title'] = lang('web_proxy_cache');
 $app['controllers']['bypass']['title'] = lang('web_proxy_web_proxy_bypass');
 
 /////////////////////////////////////////////////////////////////////////////

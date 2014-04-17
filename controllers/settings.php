@@ -1,13 +1,13 @@
 <?php
 
 /**
- * Web proxy general settings controller.
+ * Web proxy settings controller.
  *
  * @category   apps
  * @package    web-proxy
  * @subpackage controllers
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2011 ClearFoundation
+ * @copyright  2011-2014 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       http://www.clearfoundation.com/docs/developer/apps/web_proxy/
  */
@@ -34,13 +34,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 /**
- * Web proxy general settings controller.
+ * Web proxy settings controller.
  *
  * @category   apps
  * @package    web-proxy
  * @subpackage controllers
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2011 ClearFoundation
+ * @copyright  2011-2014 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       http://www.clearfoundation.com/docs/developer/apps/web_proxy/
  */
@@ -48,7 +48,7 @@
 class Settings extends ClearOS_Controller
 {
     /**
-     * Web proxy general settings overview.
+     * Web proxy settings overview.
      *
      * @return view
      */
@@ -59,7 +59,7 @@ class Settings extends ClearOS_Controller
     }
 
     /**
-     * Web proxy general settings edit.
+     * Web proxy settings edit.
      *
      * @return view
      */
@@ -82,44 +82,20 @@ class Settings extends ClearOS_Controller
         // Load dependencies
         //------------------
 
-        $this->lang->load('web_proxy');
         $this->load->library('base/Tuning');
         $this->load->library('web_proxy/Squid');
-        $this->load->library('web_proxy/Squid_Firewall');
-
-        $ntlm_available = FALSE;
-
-        if (clearos_library_installed('samba_common/Samba')) {
-            $this->load->library('samba_common/Samba');
-            $ntlm_available = $this->samba->is_initialized();
-        }
+        $this->lang->load('web_proxy');
+        $this->lang->load('base');
 
         // Handle form submit
         //-------------------
 
         if ($this->input->post('submit')) {
             try {
-                if ($this->input->post('mode')) {
-                    $mode = $this->input->post('mode');
-                    if ($mode == 1) {
-                        $this->squid_firewall->set_proxy_transparent_state(TRUE);
-                        $this->squid->set_user_authentication_state(FALSE);
-                    } else if ($mode == 2) {
-                        $this->squid_firewall->set_proxy_transparent_state(FALSE);
-                        $this->squid->set_ntlm_state(FALSE);
-                        $this->squid->set_user_authentication_state(TRUE);
-                    } else if ($mode == 3) {
-                        $this->squid_firewall->set_proxy_transparent_state(FALSE);
-                        $this->squid->set_ntlm_state(TRUE);
-                        $this->squid->set_user_authentication_state(TRUE);
-                    } else if ($mode == 4) {
-                        $this->squid_firewall->set_proxy_transparent_state(FALSE);
-                        $this->squid->set_user_authentication_state(FALSE);
-                    }
-                } else {
-                    $this->squid->set_ntlm_state($this->input->post('ntlm'));
-                    $this->squid->set_user_authentication_state($this->input->post('user_authentication'));
-                }
+                // Update
+                $this->squid->set_cache_size($this->input->post('cache'));
+                $this->squid->set_maximum_object_size($this->input->post('object'));
+                $this->squid->set_maximum_file_download_size($this->input->post('download'));
 
                 $this->squid->reset(TRUE);
 
@@ -137,41 +113,144 @@ class Settings extends ClearOS_Controller
         try {
             $data['form_type'] = $form_type;
 
-            $data['transparent_capable'] = $this->squid_firewall->get_proxy_transparent_capability();
-            $data['transparent'] = $this->squid_firewall->get_proxy_transparent_state();
-            $data['user_authentication'] = $this->squid->get_user_authentication_state();
-            $data['ntlm'] = $this->squid->get_ntlm_state();
-            $data['ntlm_available'] = $ntlm_available;
+            $data['cache'] = $this->squid->get_cache_size();
+            $data['object'] = $this->squid->get_maximum_object_size();
+            $data['download'] = $this->squid->get_maximum_file_download_size();
             $data['levels'] = $this->tuning->get_levels();
 
             $tuning = $this->squid->get_tuning();
             $data['level'] = $tuning['level'];
-
-            $data['modes']['1'] = lang('web_proxy_transparent_and_no_user_authentication');
-            $data['modes']['2'] = lang('web_proxy_non_transparent_with_user_authentication');
-            if ($ntlm_available)
-                $data['modes']['3'] = lang('web_proxy_non_transparent_with_user_authentication_and_ntlm');
-            $data['modes']['4'] = lang('web_proxy_non_transaprent_Without_user_authentication');
-
-            if ($data['transparent'] && !$data['user_authentication'])
-                $data['mode'] = 1;
-            else if (!$data['transparent'] && $data['user_authentication'] && !$data['ntlm'])
-                $data['mode'] = 2;
-            else if (!$data['transparent'] && $data['user_authentication'] && $data['ntlm'])
-                $data['mode'] = 3;
-            else if (!$data['transparent'] && !$data['user_authentication'])
-                $data['mode'] = 4;
-            else 
-                $data['mode'] = 1;
-
         } catch (Exception $e) {
             $this->page->view_exception($e);
             return;
         }
+
+        $lang_megabytes = lang('base_megabytes');
+        $lang_gigabytes = lang('base_gigabytes');
+
+        // Base unit is in kilobytes so we can use integers (no big numbers required)
+        $base_size_options = array(
+            '1024' => '1 ' . $lang_megabytes,
+            '2048' => '2 ' . $lang_megabytes,
+            '3072' => '3 ' . $lang_megabytes,
+            '4096' => '4 ' . $lang_megabytes,
+            '5120' => '5 ' . $lang_megabytes,
+            '6144' => '6 ' . $lang_megabytes,
+            '7168' => '7 ' . $lang_megabytes,
+            '8192' => '8 ' . $lang_megabytes,
+            '9216' => '9 ' . $lang_megabytes,
+            '10240' => '10 ' . $lang_megabytes,
+            '20480' => '20 ' . $lang_megabytes,
+            '30720' => '30 ' . $lang_megabytes,
+            '40960' => '40 ' . $lang_megabytes,
+            '51200' => '50 ' . $lang_megabytes,
+            '61440' => '60 ' . $lang_megabytes,
+            '71680' => '70 ' . $lang_megabytes,
+            '81920' => '80 ' . $lang_megabytes,
+            '92160' => '90 ' . $lang_megabytes,
+            '102400' => '100 ' . $lang_megabytes,
+            '204800' => '200 ' . $lang_megabytes,
+            '307200' => '300 ' . $lang_megabytes,
+            '409600' => '400 ' . $lang_megabytes,
+            '512000' => '500 ' . $lang_megabytes,
+            '614400' => '600 ' . $lang_megabytes,
+            '715800' => '700 ' . $lang_megabytes,
+            '819200' => '800 ' . $lang_megabytes,
+            '921600' => '900 ' . $lang_megabytes,
+            '1048576' => '1 ' . $lang_gigabytes,
+            '2097152' => '2 ' . $lang_gigabytes,
+            '3145728' => '3 ' . $lang_gigabytes,
+            '4194304' => '4 ' . $lang_gigabytes,
+            '5242880' => '5 ' . $lang_gigabytes,
+            '6291456' => '6 ' . $lang_gigabytes,
+            '7340032' => '7 ' . $lang_gigabytes,
+            '8388608' => '8 ' . $lang_gigabytes,
+            '9437184' => '9 ' . $lang_gigabytes,
+            '10485760' => '10 ' . $lang_gigabytes,
+        );
+
+        $big_size_options = array(
+            '102400' => '100 ' . $lang_megabytes,
+            '512000' => '500 ' . $lang_megabytes,
+            '1048576' => '1 ' . $lang_gigabytes,
+            '2097152' => '2 ' . $lang_gigabytes,
+            '3145728' => '3 ' . $lang_gigabytes,
+            '4194304' => '4 ' . $lang_gigabytes,
+            '5242880' => '5 ' . $lang_gigabytes,
+            '6291456' => '6 ' . $lang_gigabytes,
+            '7340032' => '7 ' . $lang_gigabytes,
+            '8388608' => '8 ' . $lang_gigabytes,
+            '9437184' => '9 ' . $lang_gigabytes,
+            '10485760' => '10 ' . $lang_gigabytes,
+            '20971520' => '20 ' . $lang_gigabytes,
+            '31457280' => '30 ' . $lang_gigabytes,
+            '41943040' => '40 ' . $lang_gigabytes,
+            '52428800' => '50 ' . $lang_gigabytes,
+            '62914560' => '60 ' . $lang_gigabytes,
+            '73400320' => '70 ' . $lang_gigabytes,
+            '83886080' => '80 ' . $lang_gigabytes,
+            '94371840' => '90 ' . $lang_gigabytes,
+            '104857600' => '100 ' . $lang_gigabytes,
+            '209715200' => '200 ' . $lang_gigabytes,
+            '314572800' => '300 ' . $lang_gigabytes,
+            '419430400' => '400 ' . $lang_gigabytes,
+            '524288000' => '500 ' . $lang_gigabytes,
+            '629145600' => '600 ' . $lang_gigabytes,
+            '734003200' => '700 ' . $lang_gigabytes,
+            '838860800' => '800 ' . $lang_gigabytes,
+            '943718400' => '900 ' . $lang_gigabytes,
+        );
+
+        $data['cache_options'] = $big_size_options;
+        $data['object_options'] = $base_size_options;
+        $data['download_options'] = $base_size_options;
+        $data['download_options']['none'] = lang('base_unlimited');
  
         // Load views
         //-----------
 
-        $this->page->view_form('web_proxy/settings/form', $data, lang('base_settings'));
+        $this->page->view_form('web_proxy/settings', $data, lang('base_settings'));
+    }
+
+    /**
+     * Delete cache dialog
+     *
+     * @return view
+     */
+
+    function delete()
+    {
+        // Load dependencies
+        //------------------
+        $this->load->library('web_proxy/Squid');
+    
+        $confirm_uri = '/app/web_proxy/settings/reset';
+        $cancel_uri = '/app/web_proxy';
+        $items = array(lang('web_proxy_cache'));
+
+        $this->page->view_confirm_delete($confirm_uri, $cancel_uri, $items);
+    }
+
+
+    /**
+     * Resets the cache.
+     *
+     * @return JSON
+     */
+
+    function reset()
+    {
+        // Load dependencies
+        //------------------
+
+        $this->load->library('web_proxy/Squid');
+
+        try {
+            $this->squid->run_clear_cache();
+            redirect('/web_proxy');
+        } catch (Exception $e) {
+            $this->page->view_exception($e);
+            return;
+        }
     }
 }

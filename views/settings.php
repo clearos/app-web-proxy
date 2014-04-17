@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Web proxy settings view.
+ * Web proxy cache view.
  *
  * @category   apps
  * @package    web-proxy
@@ -48,33 +48,29 @@ if ($form_type === 'edit') {
 } else {
     $read_only = TRUE;
     $buttons = array(
-        anchor_edit('/app/web_proxy/settings/edit')
+        anchor_edit('/app/web_proxy/settings/edit'),
+        anchor_custom('/app/web_proxy/settings/delete', lang('web_proxy_reset_cache')),
     );
+//        anchor_javascript('reset_cache', lang('web_proxy_reset_cache'), 'high')
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Form
+// Form open
 ///////////////////////////////////////////////////////////////////////////////
-// This is a bit unusual... the edit mode combines two fields (transparent and
-// user authentication).
 
 echo form_open('web_proxy/settings/edit'); 
 echo form_header(lang('base_settings'));
 
-if (! $transparent_capable) {
-    echo field_toggle_enable_disable('user_authentication', $user_authentication, lang('web_proxy_user_authentication'), $read_only);
-    if ($ntlm_available)
-        echo field_toggle_enable_disable('ntlm', $ntlm, lang('web_proxy_ntlm_mode'), $read_only);
-    echo field_dropdown('levels', $levels, $level, lang('base_performance_level'), TRUE);
-} else if ($form_type === 'edit') {
-    echo field_dropdown('mode', $modes, $mode, lang('web_proxy_mode'), $read_only);
-} else {
-    echo field_toggle_enable_disable('transparent', $transparent, lang('web_proxy_transparent_mode'), $read_only);
-    echo field_toggle_enable_disable('user_authentication', $user_authentication, lang('web_proxy_user_authentication'), $read_only);
-    if ($ntlm_available)
-        echo field_toggle_enable_disable('ntlm', $ntlm, lang('web_proxy_ntlm_mode'), $read_only);
-    echo field_dropdown('levels', $levels, $level, lang('base_performance_level'), TRUE);
-}
+echo fieldset_header(lang('web_proxy_cache'));
+echo field_dropdown('cache', $cache_options, $cache, lang('web_proxy_maximum_cache_size'), $read_only);
+echo field_dropdown('object', $object_options, $object, lang('web_proxy_maximum_object_size'), $read_only);
+echo field_dropdown('download', $download_options, $download, lang('web_proxy_maximum_file_download_size'), $read_only);
+echo fieldset_footer();
+
+echo fieldset_header(lang('base_tuning'));
+echo field_dropdown('levels', $levels, $level, lang('base_performance_level'), TRUE);
+echo fieldset_footer();
 
 echo field_button_set($buttons);
 

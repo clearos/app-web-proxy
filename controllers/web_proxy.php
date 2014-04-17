@@ -59,8 +59,8 @@ class Web_Proxy extends ClearOS_Controller
 
         $views = array(
             'web_proxy/server',
+            'web_proxy/authentication',
             'web_proxy/settings',
-            'web_proxy/caching',
             'web_proxy/bypass',
             'web_proxy/policy'
         );

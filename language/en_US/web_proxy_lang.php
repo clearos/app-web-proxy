@@ -4,6 +4,7 @@ $lang['web_proxy_access_control_list_exists'] = 'Access control list already exi
 $lang['web_proxy_allow'] = 'Allow';
 $lang['web_proxy_app_description'] = 'The Web Proxy app acts as an intermediary for web requests originating from your network.  Implementing the proxy server improves page access times, decreases bandwidth use, and provides site visit audits by user and IP address.';
 $lang['web_proxy_app_name'] = 'Web Proxy';
+$lang['web_proxy_authentication'] = 'Authentication';
 $lang['web_proxy_cache'] = 'Cache';
 $lang['web_proxy_cache_size_invalid'] = 'Cache size is invalid.';
 $lang['web_proxy_clearing_the_cache'] = 'Clearing the cache.';

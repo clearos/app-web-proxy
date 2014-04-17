@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Web proxy cache view.
+ * Web proxy authentication view.
  *
  * @category   apps
  * @package    web-proxy
@@ -48,33 +48,33 @@ if ($form_type === 'edit') {
 } else {
     $read_only = TRUE;
     $buttons = array(
-        anchor_edit('/app/web_proxy/caching/edit'),
-        anchor_custom('/app/web_proxy/caching/delete', lang('web_proxy_reset_cache')),
+        anchor_edit('/app/web_proxy/authentication/edit')
     );
-//        anchor_javascript('reset_cache', lang('web_proxy_reset_cache'), 'high')
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Form open
+// Form
 ///////////////////////////////////////////////////////////////////////////////
+// This is a bit unusual... the edit mode combines two fields (transparent and
+// user authentication).
 
-echo form_open('web_proxy/caching/edit'); 
-echo form_header(lang('web_proxy_cache'));
+echo form_open('web_proxy/authentication/edit'); 
+echo form_header(lang('web_proxy_authentication'));
 
-///////////////////////////////////////////////////////////////////////////////
-// Form fields
-///////////////////////////////////////////////////////////////////////////////
+if (! $transparent_capable) {
+    echo field_toggle_enable_disable('user_authentication', $user_authentication, lang('web_proxy_user_authentication'), $read_only);
+    if ($ntlm_available)
+        echo field_toggle_enable_disable('ntlm', $ntlm, lang('web_proxy_ntlm_mode'), $read_only);
+} else if ($form_type === 'edit') {
+    echo field_dropdown('mode', $modes, $mode, lang('web_proxy_mode'), $read_only);
+} else {
+    echo field_toggle_enable_disable('transparent', $transparent, lang('web_proxy_transparent_mode'), $read_only);
+    echo field_toggle_enable_disable('user_authentication', $user_authentication, lang('web_proxy_user_authentication'), $read_only);
+    if ($ntlm_available)
+        echo field_toggle_enable_disable('ntlm', $ntlm, lang('web_proxy_ntlm_mode'), $read_only);
+}
 
-echo field_dropdown('cache', $cache_options, $cache, lang('web_proxy_maximum_cache_size'), $read_only);
-echo field_dropdown('object', $object_options, $object, lang('web_proxy_maximum_object_size'), $read_only);
-echo field_dropdown('download', $download_options, $download, lang('web_proxy_maximum_file_download_size'), $read_only);
-// echo field_view(lang('web_proxy_cache'), lang('web_proxy_ready'), 'cache_status');
 echo field_button_set($buttons);
-
-///////////////////////////////////////////////////////////////////////////////
-// Form close
-///////////////////////////////////////////////////////////////////////////////
 
 echo form_footer(); 
 echo form_close();
