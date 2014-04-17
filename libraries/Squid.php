@@ -117,7 +117,6 @@ class Squid extends Daemon
     const FILE_ACLS_CONFIG = '/etc/squid/squid_acls.conf';
     const FILE_AUTH_CONFIG = '/etc/squid/squid_auth.conf';
     const FILE_HTTP_ACCESS_CONFIG = '/etc/squid/squid_http_access.conf';
-    const FILE_ADZAPPER = '/usr/sbin/adzapper';
     const FILE_APP_CONFIG = '/etc/clearos/web_proxy.conf';
     const PATH_SPOOL = '/var/spool/squid';
     const COMMAND_CLEAR_CACHE = '/usr/sbin/app-web-proxy-clear-cache';
@@ -420,26 +419,6 @@ class Squid extends Daemon
         }
 
         return $list;
-    }
-
-    /**
-     * Returns state of Adzapper filter.
-     *
-     * @return boolean TRUE if Adzapper is enabled.
-     * @throws Engine_Exception
-     */
-
-    public function get_adzapper_state()
-    {
-        clearos_profile(__METHOD__, __LINE__);
-
-        if (! $this->is_loaded)
-            $this->_load_config();
-
-        if ($this->get_redirect_program() == self::FILE_ADZAPPER)
-            return TRUE;
-        else
-            return FALSE;
     }
 
     /**
@@ -798,28 +777,6 @@ class Squid extends Daemon
 
         $shell = new Shell();
         $shell->execute(self::COMMAND_CLEAR_CACHE, '', TRUE, $options);
-    }
-
-    /**
-     * Sets Adzapper state.
-     *
-     * @param boolean $state state
-     *
-     * @return void
-     * @throws Engine_Exception, Validation_Exception
-     */
-
-    public function set_adzapper_state($state)
-    {
-        clearos_profile(__METHOD__, __LINE__);
-
-        if (! is_bool($state))
-            throw new Validation_Exception(lang('base_invalid'));
-
-        if ($state)
-            $this->_set_parameter("redirect_program", self::FILE_ADZAPPER, self::CONSTANT_NO_OFFSET, "");
-        else
-            $this->_delete_parameter("redirect_program");
     }
 
     /**

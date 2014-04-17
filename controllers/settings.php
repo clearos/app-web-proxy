@@ -142,7 +142,6 @@ class Settings extends ClearOS_Controller
             $data['user_authentication'] = $this->squid->get_user_authentication_state();
             $data['ntlm'] = $this->squid->get_ntlm_state();
             $data['ntlm_available'] = $ntlm_available;
-            $data['adzapper'] = $this->squid->get_adzapper_state();
             $data['levels'] = $this->tuning->get_levels();
 
             $tuning = $this->squid->get_tuning();
