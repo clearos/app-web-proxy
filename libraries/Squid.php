@@ -211,6 +211,13 @@ class Squid extends Daemon
         $ips = $iface_manager->get_most_trusted_ips();
         $lans = $iface_manager->get_most_trusted_networks(TRUE, TRUE);
 
+        $firewall = new Squid_Firewall();
+        $is_firewall_tranparent = $firewall->get_proxy_transparent_state();
+
+        $network = new Network();
+        $mode = $network->get_mode();
+        $is_standalone = (($mode === Network::MODE_STANDALONE) || ($mode === Network::MODE_TRUSTED_STANDALONE)) ? TRUE : FALSE;
+
         // Handle error templates
         //-----------------------
 
@@ -244,8 +251,7 @@ class Squid extends Daemon
 
         $reload_squid = FALSE;
 
-        $firewall = new Squid_Firewall();
-        $transparent = ($firewall->get_proxy_transparent_state()) ? ' intercept' : '';
+        $transparent = ($is_firewall_transparent && !$is_standalone) ? ' intercept' : '';
 
         if (! in_array('127.0.0.1', $ips))
             array_unshift($ips, '127.0.0.1');
@@ -262,7 +268,7 @@ class Squid extends Daemon
             $current_lines = $file->get_contents();
 
         if (trim($current_lines) != trim($new_lines)) {
-            clearos_log('web_proxy', 'network change detected - updating port configuration');
+            clearos_log('web_proxy', 'auto-configuration - updating port configuration');
 
             if ($file->exists())
                 $file->delete();
@@ -301,7 +307,7 @@ class Squid extends Daemon
             $current_lines = $file->get_contents();
 
         if (trim($current_lines) != trim($new_lines)) {
-            clearos_log('web_proxy', 'network change detected - updating LAN configuration');
+            clearos_log('web_proxy', 'auto-configuration - updating LAN configuration');
 
             if ($file->exists())
                 $file->delete();
