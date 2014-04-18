@@ -77,6 +77,13 @@ if [ -e /usr/lib/systemd/system/squid.service ]; then
         logger -p local6.notice -t installer "app-web-proxy-core - changing pam_auth to basic_pam_auth"
         sed -i -e "s/\/pam_auth/\/basic_pam_auth/" /etc/squid/squid_auth.conf
     fi
+
+    CHECK=`grep '^access_log[[:space:]]*/var/log/squid/access.log[[:space:]]*squid' /etc/squid/squid.conf 2>/dev/null`
+
+    if [ -n "$CHECK" ]; then
+        logger -p local6.notice -t installer "app-web-proxy-core - updating access_log parameter"
+        sed -i -e "s/access_log[[:space:]]*\/var\/log\/squid\/access.log/access_log stdio:\/var\/log\/squid\/access.log/" /etc/squid/squid.conf
+    fi
 fi
 
 # Make sure Squid has permissions to Winbind pipe
