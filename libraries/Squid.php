@@ -64,9 +64,11 @@ use \clearos\apps\base\Product as Product;
 use \clearos\apps\base\Shell as Shell;
 use \clearos\apps\base\Tuning as Tuning;
 use \clearos\apps\content_filter\DansGuardian as DansGuardian;
+use \clearos\apps\network\Iface_Manager as Iface_Manager;
 use \clearos\apps\network\Network as Network;
 use \clearos\apps\network\Network_Status as Network_Status;
 use \clearos\apps\network\Network_Utils as Network_Utils;
+use \clearos\apps\web_proxy\Squid_Firewall as Squid_Firewall;
 
 clearos_load_library('base/Daemon');
 clearos_load_library('base/File');
@@ -75,9 +77,11 @@ clearos_load_library('base/Product');
 clearos_load_library('base/Shell');
 clearos_load_library('base/Tuning');
 clearos_load_library('content_filter/DansGuardian');
+clearos_load_library('network/Iface_Manager');
 clearos_load_library('network/Network');
 clearos_load_library('network/Network_Status');
 clearos_load_library('network/Network_Utils');
+clearos_load_library('web_proxy/Squid_Firewall');
 
 // Exceptions
 //-----------
@@ -85,11 +89,14 @@ clearos_load_library('network/Network_Utils');
 use \Exception as Exception;
 use \clearos\apps\base\Engine_Exception as Engine_Exception;
 use \clearos\apps\base\File_No_Match_Exception as File_No_Match_Exception;
+use \clearos\apps\base\File_Not_Found_Exception as File_Not_Found_Exception;
 use \clearos\apps\base\Validation_Exception as Validation_Exception;
 
 clearos_load_library('base/Engine_Exception');
 clearos_load_library('base/File_No_Match_Exception');
+clearos_load_library('base/File_Not_Found_Exception');
 clearos_load_library('base/Validation_Exception');
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // C L A S S
@@ -116,9 +123,12 @@ class Squid extends Daemon
     const FILE_CONFIG = '/etc/squid/squid.conf';
     const FILE_ACLS_CONFIG = '/etc/squid/squid_acls.conf';
     const FILE_AUTH_CONFIG = '/etc/squid/squid_auth.conf';
+    const FILE_LANS_CONFIG = '/etc/squid/squid_lans.conf';
+    const FILE_PORT_CONFIG = '/etc/squid/squid_http_port.conf';
     const FILE_HTTP_ACCESS_CONFIG = '/etc/squid/squid_http_access.conf';
     const FILE_APP_CONFIG = '/etc/clearos/web_proxy.conf';
     const PATH_SPOOL = '/var/spool/squid';
+    const PATH_TEMPLATES = '/var/clearos/web_proxy/errors';
     const COMMAND_CLEAR_CACHE = '/usr/sbin/app-web-proxy-clear-cache';
 
     const CONSTANT_NO_OFFSET = -1;
@@ -143,6 +153,7 @@ class Squid extends Daemon
     protected $config = array();
     protected $file_pam_auth = NULL;
     protected $file_squid_unix_group = NULL;
+    protected $error_templates = NULL;
 
     ///////////////////////////////////////////////////////////////////////////////
     // M E T H O D S
@@ -158,6 +169,11 @@ class Squid extends Daemon
 
         parent::__construct('squid');
 
+        $this->error_templates = clearos_app_base('web_proxy') . '/deploy/templates';
+
+        // Handle embedded lib/lib64 paths in configuration files
+        //-------------------------------------------------------
+
         $lib = (file_exists('/usr/lib64/squid')) ? 'lib64' : 'lib';
 
         if (clearos_version() >= 7)
@@ -169,6 +185,138 @@ class Squid extends Daemon
             $this->file_squid_unix_group = "/usr/$lib/squid/ext_unix_group_acl";
         else
             $this->file_squid_unix_group = "/usr/$lib/squid/squid_unix_group";
+    }
+
+    /**
+     * Auto configures web proxy.
+     *
+     * @return void
+     * @throws Engine_Exception
+     */
+
+    public function auto_configure()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        // Bail if auto configure disabled
+        //--------------------------------
+
+        if (! $this->get_auto_configure_state())
+            return;
+
+        // Grab some network info first
+        //-----------------------------
+
+        $iface_manager = new Iface_Manager();
+        $ips = $iface_manager->get_most_trusted_ips();
+        $lans = $iface_manager->get_most_trusted_networks(TRUE, TRUE);
+
+        // Handle error templates
+        //-----------------------
+
+        $folder = new Folder($this->error_templates);
+        $templates = $folder->get_listing();
+
+        foreach ($templates as $template) {
+            $target = preg_replace('/\.template$/', '', $template);
+
+            $file = new File($this->error_templates . '/' . $template);
+            $contents = $file->get_contents();
+            $contents = preg_replace('/PCN_LAN_IP/s', $ips[0], $contents);
+            $current_contents = '';
+
+            $file = new File(self::PATH_TEMPLATES . '/' . $target);
+
+            if ($file->exists())
+                $current_contents = $file->get_contents();
+
+            if (trim($current_contents) != trim($contents)) {
+                if ($file->exists())
+                    $file->delete();
+
+                $file->create('root', 'root', '0644');
+                $file->add_lines("$contents\n");
+            }
+        }
+
+        // Handle proxy port listener
+        //---------------------------
+
+        $reload_squid = FALSE;
+
+        $firewall = new Squid_Firewall();
+        $transparent = ($firewall->get_proxy_transparent_state()) ? ' intercept' : '';
+
+        if (! in_array('127.0.0.1', $ips))
+            array_unshift($ips, '127.0.0.1');
+
+        $current_lines = '';
+        $new_lines = "# Created automatically based on network configuration\n";
+
+        foreach ($ips as $ip)
+            $new_lines .= "http_port $ip:3128$transparent\n";
+
+        $file = new File(self::FILE_PORT_CONFIG);
+
+        if ($file->exists())
+            $current_lines = $file->get_contents();
+
+        if (trim($current_lines) != trim($new_lines)) {
+            clearos_log('web_proxy', 'network change detected - updating port configuration');
+
+            if ($file->exists())
+                $file->delete();
+
+            $file->create('root', 'root', '0644');
+            $file->add_lines($new_lines);
+
+            $reload_squid = TRUE;
+        }
+
+        // LAN ACL definitions
+        //--------------------
+
+        if (empty($lans)) {
+            $lans = array(
+                '10.0.0.0/8',
+                '172.16.0.0/12',
+                '192.168.0.0/16',
+            );
+        }
+
+        $lan_list = '';
+
+        foreach ($lans as $lan)
+            $lan_list .= " $lan";
+
+        $current_lines = '';
+
+        $new_lines = "# Created automatically based on network configuration\n";
+        $new_lines .= "acl webconfig_lan src$lan_list\n";
+        $new_lines .= "acl webconfig_to_lan dst$lan_list\n";
+
+        $file = new File(self::FILE_LANS_CONFIG);
+
+        if ($file->exists())
+            $current_lines = $file->get_contents();
+
+        if (trim($current_lines) != trim($new_lines)) {
+            clearos_log('web_proxy', 'network change detected - updating LAN configuration');
+
+            if ($file->exists())
+                $file->delete();
+
+            $file->create('root', 'root', '0644');
+            $file->add_lines($new_lines);
+
+            $reload_squid = TRUE;
+        }
+
+        // Reload Squid if a change occurred
+        //----------------------------------
+
+        if ($reload_squid)
+            $this->reset();
     }
 
     /**
@@ -419,6 +567,33 @@ class Squid extends Daemon
         }
 
         return $list;
+    }
+
+    /**
+     * Returns auto-configure state.
+     *
+     * @return boolean state of auto-configure mode
+     */
+
+    public function get_auto_configure_state()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        try {
+            $file = new File(self::FILE_APP_CONFIG);
+            $value = $file->lookup_value("/^auto_configure\s*=\s*/i");
+        } catch (File_Not_Found_Exception $e) {
+            return TRUE;
+        } catch (File_No_Match_Exception $e) {
+            return TRUE;
+        } catch (Exception $e) {
+            throw new Engine_Exception($e->get_message());
+        }
+
+        if (preg_match('/yes/i', $value))
+            return TRUE;
+        else
+            return FALSE;
     }
 
     /**

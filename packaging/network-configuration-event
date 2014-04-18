@@ -1,94 +1,53 @@
-#!/bin/sh
+#!/usr/clearos/sandbox/usr/bin/php
+<?php
 
-#-------------------------------------------------------------------
-# Load configuration
-#-------------------------------------------------------------------
+/**
+ * Web proxy network configuration change handler.
+ *
+ * @category   apps
+ * @package    web-proxy
+ * @subpackage scripts
+ * @author     ClearFoundation <developer@clearfoundation.com>
+ * @copyright  2014 ClearFoundation
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
+ * @link       http://www.clearfoundation.com/docs/developer/apps/web_proxy/
+ */
 
-[ -e /etc/clearos/firewall.conf ] && source /etc/clearos/firewall.conf
-[ -e /etc/sysconfig/squid ] && source /etc/sysconfig/squid
-[ -e /etc/init.d/functions-automagic ] && source /etc/init.d/functions-automagic
+///////////////////////////////////////////////////////////////////////////////
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+///////////////////////////////////////////////////////////////////////////////
 
-#-------------------------------------------------------------------
-# Generate error pages
-#-------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////
+// B O O T S T R A P
+///////////////////////////////////////////////////////////////////////////////
 
-ERRORFILES=`/bin/ls /usr/clearos/apps/web_proxy/deploy/templates/ERR_*template 2>/dev/null`
-LANIP=`/bin/echo $AUTOMAGIC_LANIPS | /bin/cut -d ' ' -f 1`
+$bootstrap = getenv('CLEAROS_BOOTSTRAP') ? getenv('CLEAROS_BOOTSTRAP') : '/usr/clearos/framework/shared';
+require_once $bootstrap . '/bootstrap.php';
 
-if [ -n "$LANIP" ]; then
-    for ERRORFILE in $ERRORFILES; do
-        TARGET=`/bin/echo $ERRORFILE | sed 's/\.template$//' | sed 's/.*\///' `
-        sed -e "s/PCN_LAN_IP/$LANIP/" $ERRORFILE > "/var/clearos/web_proxy/errors/$TARGET"
-    done
-fi
+///////////////////////////////////////////////////////////////////////////////
+// D E P E N D E N C I E S
+///////////////////////////////////////////////////////////////////////////////
 
-#-------------------------------------------------------------------
-# Bail at this point if automagic is disabled
-#-------------------------------------------------------------------
+use \clearos\apps\web_proxy\Squid as Squid;
 
-if [ "$AUTOMAGIC" == "off" ]; then
-	exit 0
-fi
+clearos_load_library('web_proxy/Squid');
 
-#-------------------------------------------------------------------
-# http_port configuration 
-#-------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////
+// M A I N
+///////////////////////////////////////////////////////////////////////////////
 
-RELOAD=""
-
-if [ "$SQUID_TRANSPARENT" == "on" ]; then
-	TRANSPARENT=" transparent"
-else
-	TRANSPARENT=""
-fi
-
-echo "# Created automatically based on network configuration" > /etc/squid/squid_http_port.conf.clearos
-
-for IP in $AUTOMAGIC_LANIPS 127.0.0.1; do
-	echo "http_port $IP:3128$TRANSPARENT" >> /etc/squid/squid_http_port.conf.clearos
-done
-
-if diff /etc/squid/squid_http_port.conf.clearos /etc/squid/squid_http_port.conf >/dev/null 2>&1; then
-    rm -f /etc/squid/squid_http_port.conf.clearos
-else
-    /usr/bin/logger -p local6.notice -t web_proxy "network change detected - updating port configuration" 
-    mv /etc/squid/squid_http_port.conf.clearos /etc/squid/squid_http_port.conf
-    RELOAD="yes"
-fi
-
-#-------------------------------------------------------------------
-# LAN ACL definitions
-#-------------------------------------------------------------------
-
-echo "# Created automatically based on network configuration" > /etc/squid/squid_lans.conf.clearos
-
-LANNETS=""
-
-for LAN in $AUTOMAGIC_LANNETS; do
-	LANNETS="$LAN $LANNETS"
-done
-
-if [ -n "$LANNETS" ]; then
-	echo "acl webconfig_lan src $LANNETS $EXTRALANS" >> /etc/squid/squid_lans.conf.clearos
-	echo "acl webconfig_to_lan dst $LANNETS $EXTRALANS" >> /etc/squid/squid_lans.conf.clearos
-else
-	echo "acl webconfig_lan src 192.168.0.0/16 10.0.0.0/8" >> /etc/squid/squid_lans.conf.clearos
-	echo "acl webconfig_to_lan dst 192.168.0.0/16 10.0.0.0/8" >> /etc/squid/squid_lans.conf.clearos
-fi
-
-if diff /etc/squid/squid_lans.conf.clearos /etc/squid/squid_lans.conf >/dev/null 2>&1; then
-    rm -f /etc/squid/squid_lans.conf.clearos
-else
-    /usr/bin/logger -p local6.notice -t web_proxy "network change detected - updating LAN configuration" 
-    mv /etc/squid/squid_lans.conf.clearos /etc/squid/squid_lans.conf
-    RELOAD="yes"
-fi
-
-#-------------------------------------------------------------------
-# Reload if changes occurred
-#-------------------------------------------------------------------
-
-if [ "$RELOAD" == "yes" ]; then
-    /usr/bin/logger -p local6.notice -t web_proxy "network change detected - reloading web proxy"
-    /sbin/service squid reload >/dev/null 2>&1
-fi
+$squid = new Squid();
+$squid->auto_configure();
