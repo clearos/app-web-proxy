@@ -39,6 +39,46 @@ if [ -n "$CHECK" ]; then
     sed -i -e "s/\/usr\/$WRONG_LIB/\/usr\/$CORRECT_LIB/" /etc/squid/squid_auth.conf
 fi
 
+# Configuration changes in ClearOS 7
+#-----------------------------------
+
+if [ -e /usr/lib/systemd/system/squid.service ]; then
+    CHECK=`grep "^acl manager proto cache_object" /etc/squid/squid.conf 2>/dev/null`
+
+    if [ -n "$CHECK" ]; then
+        logger -p local6.notice -t installer "app-web-proxy-core - removing deprecated acl manager"
+        sed -i -e '/^acl manager proto cache_object/d' /etc/squid/squid.conf
+    fi
+
+    CHECK=`grep "^acl localhost src" /etc/squid/squid.conf 2>/dev/null`
+
+    if [ -n "$CHECK" ]; then
+        logger -p local6.notice -t installer "app-web-proxy-core - removing deprecated acl localhost"
+        sed -i -e '/^acl localhost src/d' /etc/squid/squid.conf
+    fi
+
+    CHECK=`grep "^acl to_localhost dst" /etc/squid/squid.conf 2>/dev/null`
+
+    if [ -n "$CHECK" ]; then
+        logger -p local6.notice -t installer "app-web-proxy-core - removing deprecated acl to_localhost"
+        sed -i -e '/^acl to_localhost dst/d' /etc/squid/squid.conf
+    fi
+
+    CHECK=`grep '/squid_unix_group' /etc/squid/squid_auth.conf 2>/dev/null`
+
+    if [ -n "$CHECK" ]; then
+        logger -p local6.notice -t installer "app-web-proxy-core - changing squid_unix_group to ext_unix_group_acl"
+        sed -i -e "s/\/squid_unix_group/\/ext_unix_group_acl/" /etc/squid/squid_auth.conf
+    fi
+
+    CHECK=`grep '/pam_auth' /etc/squid/squid_auth.conf 2>/dev/null`
+
+    if [ -n "$CHECK" ]; then
+        logger -p local6.notice -t installer "app-web-proxy-core - changing pam_auth to basic_pam_auth"
+        sed -i -e "s/\/pam_auth/\/basic_pam_auth/" /etc/squid/squid_auth.conf
+    fi
+fi
+
 # Make sure Squid has permissions to Winbind pipe
 #------------------------------------------------
 
