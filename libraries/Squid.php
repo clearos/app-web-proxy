@@ -212,7 +212,7 @@ class Squid extends Daemon
         $lans = $iface_manager->get_most_trusted_networks(TRUE, TRUE);
 
         $firewall = new Squid_Firewall();
-        $is_firewall_tranparent = $firewall->get_proxy_transparent_state();
+        $is_firewall_transparent = $firewall->get_proxy_transparent_state();
 
         $network = new Network();
         $mode = $network->get_mode();
