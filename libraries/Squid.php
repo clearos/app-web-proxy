@@ -63,7 +63,6 @@ use \clearos\apps\base\Folder as Folder;
 use \clearos\apps\base\Product as Product;
 use \clearos\apps\base\Shell as Shell;
 use \clearos\apps\base\Tuning as Tuning;
-use \clearos\apps\content_filter\DansGuardian as DansGuardian;
 use \clearos\apps\network\Iface_Manager as Iface_Manager;
 use \clearos\apps\network\Network as Network;
 use \clearos\apps\network\Network_Status as Network_Status;
@@ -76,7 +75,6 @@ clearos_load_library('base/Folder');
 clearos_load_library('base/Product');
 clearos_load_library('base/Shell');
 clearos_load_library('base/Tuning');
-clearos_load_library('content_filter/DansGuardian');
 clearos_load_library('network/Iface_Manager');
 clearos_load_library('network/Network');
 clearos_load_library('network/Network_Status');
@@ -1249,70 +1247,11 @@ class Squid extends Daemon
 
         $file = new File(self::FILE_HTTP_ACCESS_CONFIG);
 
-        try {
-            $replacement = "http_access $type cleargroup-$name " . ($time_logic ? "" : "!") . "cleartime-$time\n";
-            $match = $file->replace_lines("/http_access (allow|deny) cleargroup-$name .*$/", $replacement);
+        $replacement = "http_access $type cleargroup-$name " . ($time_logic ? "" : "!") . "cleartime-$time\n";
+        $match = $file->replace_lines("/http_access (allow|deny) cleargroup-$name .*$/", $replacement);
 
-            if (! $match)
-                $file->add_lines("http_access $type cleargroup-$name " . ($time_logic ? "" : "!") . "cleartime-$time\n");
-
-            // Check for follow_x_forwarded_for directives
-            if (strlen($ips) > 0) {
-                /* FIXME
-                try {
-                    $file->lookup_line("/^follow_x_forwarded_for allow localhost$/");
-                } catch (File_No_Match_Exception $e) {
-                    $lines = "follow_x_forwarded_for allow localhost\nfollow_x_forwarded_for deny localhost\n";
-                    $file->add_lines_before($lines, "/http_access " . str_replace("/", "\\/", $config['http_access']['line'][1]) . "/i");
-                } catch (Exception $e) {
-                    throw new Engine_Exception(clearos_exception_message($e));
-                }
-                */
-
-                // Check for DG config
-                // FIXME
-                /*try {
-                    if (file_exists(COMMON_CORE_DIR . "/api/DansGuardian.class.php")) {
-                        $dg = new Daemon("dansguardian");
-                        if ($dg->get_running_state()) {
-                            require_once('DansGuardian.class.php');
-                            try {
-                                $file = new File(DansGuardian::FILE_CONFIG);
-                                if (eregi('off', $file->lookup_value("/^forwardedfor\s=/"))) {
-                                    if (!$file->replace_lines("/^forwardedfor\s=/", "forwardedfor = on\n"))
-                                        $file->add_lines("forwardedfor = on\n");
-                                    $dg->restart();
-                                }
-                            } catch (Exception $e) {
-                                // Ignore
-                            }
-                        }
-                    }
-
-                    if (file_exists(COMMON_CORE_DIR . "/api/DansGuardianAv.class.php")) {
-                        $dgav = new Daemon("dansguardian-av");
-                        if ($dgav->get_running_state()) {
-                            require_once('DansGuardianAv.class.php');
-                            try {
-                                $file = new File(DansGuardian::FILE_CONFIG);
-                                if (eregi('off', $file->lookup_value("/^forwardedfor\s=/"))) {
-                                    if (!$file->replace_lines("/^forwardedfor\s=/", "forwardedfor = on\n"))
-                                        $file->add_lines("forwardedfor = on\n");
-                                    $dgav->restart();
-                                }
-                            } catch (Exception $e) {
-                                // Ignore
-                            }
-                        }
-                    }
-                } catch (Exception $e) {
-                    // Ignore
-                }
-                */
-            }
-        } catch (Exception $e) {
-            throw new Engine_Exception(clearos_exception_message($e));
-        }
+        if (! $match)
+            $file->add_lines("http_access $type cleargroup-$name " . ($time_logic ? "" : "!") . "cleartime-$time\n");
     }
 
     /**
