@@ -211,6 +211,7 @@ class Squid extends Daemon
 
         $firewall = new Squid_Firewall();
         $is_firewall_transparent = $firewall->get_proxy_transparent_state();
+        $is_proxy_filter_running = $firewall->get_proxy_filter_state();
 
         $network = new Network();
         $mode = $network->get_mode();
@@ -249,7 +250,7 @@ class Squid extends Daemon
 
         $reload_squid = FALSE;
 
-        $transparent = ($is_firewall_transparent && !$is_standalone) ? ' intercept' : '';
+        $transparent = ($is_firewall_transparent && !$is_standalone && !$is_proxy_filter_running) ? ' intercept' : '';
 
         if (! in_array('127.0.0.1', $ips))
             array_unshift($ips, '127.0.0.1');

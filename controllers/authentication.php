@@ -120,6 +120,10 @@ class Authentication extends ClearOS_Controller
                     $this->squid->set_user_authentication_state($this->input->post('user_authentication'));
                 }
 
+                // The network configuration needs to updated when the transparent
+                // mode changes around, ergo auto_configure().
+
+                $this->squid->auto_configure();
                 $this->squid->reset(TRUE);
 
                 $this->page->set_status_updated();
