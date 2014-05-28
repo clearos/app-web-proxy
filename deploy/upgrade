@@ -90,7 +90,7 @@ fi
 #------------------------------------------------
 
 if ! /usr/bin/id -n -G squid | grep -q "\<wbpriv\>"; then
-    /usr/sbin/usermod -G $(id -Gn squid | tr ' ' ','),wbpriv squid
+    /usr/sbin/usermod -G $(id -Gn squid | tr ' ' ','),wbpriv squid 2>/dev/null
 fi
 
 # Run network configuration event on install/upgrade

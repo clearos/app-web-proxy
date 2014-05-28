@@ -27,6 +27,7 @@ Requires: app-firewall-core >= 1:1.4.15
 Requires: app-web-proxy-plugin-core
 Requires: app-samba-common-core
 Requires: app-storage-core >= 1:1.4.7
+Requires: samba-winbind
 Requires: squid >= 3.1.10
 
 %description core

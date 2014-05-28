@@ -47,6 +47,7 @@ $app['core_requires'] = array(
     'app-web-proxy-plugin-core',
     'app-samba-common-core',
     'app-storage-core >= 1:1.4.7',
+    'samba-winbind',
     'squid >= 3.1.10',
 );
 
