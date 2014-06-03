@@ -93,6 +93,15 @@ if ! /usr/bin/id -n -G squid | grep -q "\<wbpriv\>"; then
     /usr/sbin/usermod -G $(id -Gn squid | tr ' ' ','),wbpriv squid 2>/dev/null
 fi
 
+# Change access control ordering (tracker #1711)
+#-----------------------------------------------
+
+CHECK=`grep -A1 "include /etc/squid/squid_http_access.conf" /etc/squid/squid.conf 2>/dev/null | grep "http_access allow webconfig_to_lan"`
+if [ -n "$CHECK" ]; then
+    logger -p local6.notice -t installer "app-web-proxy-core - updating access control ordering"
+    sed -i -e ':begin;$!N;s/include \/etc\/squid\/squid_http_access.conf\nhttp_access allow webconfig_to_lan/http_access allow webconfig_to_lan\ninclude \/etc\/squid\/squid_http_access.conf/;tbegin;P;D' /etc/squid/squid.conf
+fi
+
 # Run network configuration event on install/upgrade
 #---------------------------------------------------
 
