@@ -1,13 +1,13 @@
 <?php
 
 /**
- * Web proxy bypass controller.
+ * Web proxy exceptions controller.
  *
  * @category   apps
  * @package    web-proxy
  * @subpackage controllers
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2011-2012 ClearFoundation
+ * @copyright  2014 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       http://www.clearfoundation.com/docs/developer/apps/web_proxy/
  */
@@ -34,18 +34,18 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 /**
- * Web proxy bypass controller.
+ * Web proxy exceptions controller.
  *
  * @category   apps
  * @package    web-proxy
  * @subpackage controllers
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2011-2012 ClearFoundation
+ * @copyright  2014 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       http://www.clearfoundation.com/docs/developer/apps/web_proxy/
  */
 
-class Bypass extends ClearOS_Controller
+class Exceptions extends ClearOS_Controller
 {
     /**
      * Web proxy bypass overview.
@@ -59,13 +59,13 @@ class Bypass extends ClearOS_Controller
         //------------------
 
         $this->lang->load('web_proxy');
-        $this->load->library('web_proxy/Squid_Firewall');
+        $this->load->library('web_proxy/Squid');
 
         // Load view data
         //---------------
 
         try {
-            $data['bypasses'] = $this->squid_firewall->get_proxy_bypass_list();
+            $data['exceptions'] = $this->squid->get_exception_sites();
         } catch (Exception $e) {
             $this->page->view_exception($e);
             return;
@@ -74,11 +74,11 @@ class Bypass extends ClearOS_Controller
         // Load views
         //-----------
 
-        $this->page->view_form('web_proxy/bypass/summary', $data, lang('web_proxy_web_proxy_bypass'));
+        $this->page->view_form('web_proxy/exceptions/summary', $data, lang('web_proxy_exception_sites'));
     }
 
     /**
-     * Web proxy bypass add.
+     * Web proxy exception add.
      *
      * @return view
      */
@@ -91,19 +91,16 @@ class Bypass extends ClearOS_Controller
     /**
      * Delete entry view.
      *
-     * @param string $address address
+     * @param string $site site
      *
      * @return view
      */
 
-    function delete($address)
+    function delete($site)
     {
-        // Deal with embedded / in network notation
-        $converted_address = preg_replace('/-/', '/', $address);
-
-        $confirm_uri = '/app/web_proxy/bypass/destroy/' . $address;
-        $cancel_uri = '/app/web_proxy/bypass';
-        $items = array($converted_address);
+        $confirm_uri = '/app/web_proxy/exceptions/destroy/' . $site;
+        $cancel_uri = '/app/web_proxy/exceptions';
+        $items = array($site);
 
         $this->page->view_confirm_delete($confirm_uri, $cancel_uri, $items);
     }
@@ -111,29 +108,26 @@ class Bypass extends ClearOS_Controller
     /**
      * Destroys entry view.
      *
-     * @param string $address IP address
+     * @param string $site site
      *
      * @return view
      */
 
-    function destroy($address)
+    function destroy($site)
     {
         // Load libraries
         //---------------
 
-        $this->load->library('web_proxy/Squid_Firewall');
+        $this->load->library('web_proxy/Squid');
 
         // Handle delete
         //--------------
 
         try {
-            // Deal with embedded / in network notation
-            $converted_address = preg_replace('/-/', '/', $address);
-
-            $this->squid_firewall->delete_proxy_bypass($converted_address);
-
+            $this->squid->delete_exception_site($site);
+            $this->squid->reset(TRUE);
             $this->page->set_status_deleted();
-            redirect('/web_proxy/bypass/index');
+            redirect('/web_proxy/exceptions');
         } catch (Exception $e) {
             $this->page->view_exception($e);
             return;
@@ -141,7 +135,7 @@ class Bypass extends ClearOS_Controller
     }
 
     /**
-     * Web proxy bypass edit.
+     * Web proxy exceptions edit.
      *
      * @return view
      */
@@ -165,13 +159,12 @@ class Bypass extends ClearOS_Controller
         //------------------
 
         $this->lang->load('web_proxy');
-        $this->load->library('web_proxy/Squid_Firewall');
+        $this->load->library('web_proxy/Squid');
 
         // Set validation rules
         //---------------------
 
-        $this->form_validation->set_policy('nickname', 'web_proxy/Squid_Firewall', 'validate_name', TRUE);
-        $this->form_validation->set_policy('address', 'web_proxy/Squid_Firewall', 'validate_address', TRUE);
+        $this->form_validation->set_policy('site', 'web_proxy/Squid', 'validate_site', TRUE);
         $form_ok = $this->form_validation->run();
 
         // Handle form submit
@@ -179,16 +172,10 @@ class Bypass extends ClearOS_Controller
 
         if ($this->input->post('submit') && ($form_ok)) {
             try {
-                // Update
-                $this->squid_firewall->add_proxy_bypass(
-                    $this->input->post('nickname'),
-                    $this->input->post('address')
-                );
-
-
-                // clearsync handles reload
+                $this->squid->add_exception_site($this->input->post('site'));
+                $this->squid->reset(TRUE);
                 $this->page->set_status_updated();
-                redirect('/web_proxy/bypass/index');
+                redirect('/web_proxy/exceptions');
             } catch (Exception $e) {
                 $this->page->view_exception($e);
                 return;
@@ -203,6 +190,6 @@ class Bypass extends ClearOS_Controller
         // Load views
         //-----------
 
-        $this->page->view_form('web_proxy/bypass/item', $data, lang('web_proxy_web_proxy_bypass'));
+        $this->page->view_form('web_proxy/exceptions/item', $data, lang('web_proxy_exception_sites'));
     }
 }

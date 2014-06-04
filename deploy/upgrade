@@ -93,6 +93,15 @@ if ! /usr/bin/id -n -G squid | grep -q "\<wbpriv\>"; then
     /usr/sbin/usermod -G $(id -Gn squid | tr ' ' ','),wbpriv squid 2>/dev/null
 fi
 
+# Add user-defined whitelists
+#----------------------------
+
+CHECK=`grep "^include /etc/squid/squid_whitelists.conf$" /etc/squid/squid.conf 2>/dev/null`
+if ( [ -e /etc/squid/squid.conf ] && [ -z "$CHECK" ] ); then
+    logger -p local6.notice -t installer "app-web-proxy-core - adding whitelist support"
+    sed -i -e "s/^http_access deny manager/http_access deny manager\n\n# User-defined whitelists\ninclude \/etc\/squid\/squid_whitelists.conf/" /etc/squid/squid.conf
+fi
+
 # Change access control ordering (tracker #1711)
 #-----------------------------------------------
 

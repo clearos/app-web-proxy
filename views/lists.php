@@ -1,13 +1,13 @@
 <?php
 
 /**
- * Web site bypass view.
+ * Web proxy lists view.
  *
  * @category   apps
  * @package    web-proxy
  * @subpackage views
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2012 ClearFoundation
+ * @copyright  2011 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       http://www.clearfoundation.com/docs/developer/apps/web_proxy/
  */
@@ -26,65 +26,35 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.  
-//
+//  
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
 // Load dependencies
 ///////////////////////////////////////////////////////////////////////////////
 
-$this->lang->load('firewall');
-$this->lang->load('network');
 $this->lang->load('web_proxy');
-
-///////////////////////////////////////////////////////////////////////////////
-// Headers
-///////////////////////////////////////////////////////////////////////////////
-
-$headers = array(
-    lang('firewall_nickname'),
-    lang('network_address'),
-);
-
-///////////////////////////////////////////////////////////////////////////////
-// Anchors 
-///////////////////////////////////////////////////////////////////////////////
-
-$anchors = array(
-    anchor_custom('/app/web_proxy', lang('base_return_to_summary')),
-    anchor_add('/app/web_proxy/bypass/add')
-);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Items
 ///////////////////////////////////////////////////////////////////////////////
 
-foreach ($bypasses as $id => $details) {
-    // Deal with embedded / in network notation
-    $address = preg_replace('/\//', '-', $details['address']);
+$anchor = anchor_edit('/app/web_proxy/bypass/index', 'high');
+$items['bypass']['title'] = lang('web_proxy_bypass');
+$items['bypass']['action'] = $anchor;
+$items['bypass']['anchors'] = array($anchor);
 
-    $item['title'] = $details['address'];
-    $item['action'] = '/app/web_proxy/bypass/edit/' . $address;
-    $item['anchors'] = button_set(
-        array(anchor_delete('/app/web_proxy/bypass/delete/' . $address))
-    );
-    $item['details'] = array(
-        $details['name'],
-        $details['address']
-    );
-
-    $items[] = $item;
-}
-
-sort($items);
+$anchor = anchor_edit('/app/web_proxy/exceptions/index', 'high');
+$items['exceptions']['title'] = lang('web_proxy_exception_sites');
+$items['exceptions']['action'] = $anchor;
+$items['exceptions']['anchors'] = array($anchor);
 
 ///////////////////////////////////////////////////////////////////////////////
-// Summary table
+// Action table
 ///////////////////////////////////////////////////////////////////////////////
 
-echo summary_table(
-    lang('web_proxy_web_proxy_bypass'),
-    $anchors,
-    $headers,
+echo action_table(
+    lang('web_proxy_rules'),
+    array(),
     $items
 );

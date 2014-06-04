@@ -1,13 +1,13 @@
 <?php
 
 /**
- * Web proxy controller.
+ * Web proxy lists controller.
  *
  * @category   apps
  * @package    web-proxy
  * @subpackage controllers
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2011 ClearFoundation
+ * @copyright  2014 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       http://www.clearfoundation.com/docs/developer/apps/web_proxy/
  */
@@ -34,37 +34,35 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 /**
- * Web proxy controller.
+ * Web proxy lists controller.
  *
  * @category   apps
  * @package    web-proxy
  * @subpackage controllers
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2011 ClearFoundation
+ * @copyright  2014 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       http://www.clearfoundation.com/docs/developer/apps/web_proxy/
  */
 
-class Web_Proxy extends ClearOS_Controller
+class Lists extends ClearOS_Controller
 {
     /**
-     * Web proxy server overview.
+     * Global settings view.
      *
      * @return view
      */
 
     function index()
     {
+        // Load libraries
+        //---------------
+
         $this->lang->load('web_proxy');
 
-        $views = array(
-            'web_proxy/server',
-            'web_proxy/authentication',
-            'web_proxy/settings',
-            'web_proxy/lists',
-            'web_proxy/policy'
-        );
+        // Load the views
+        //---------------
 
-        $this->page->view_forms($views, lang('web_proxy_app_name'));
+        $this->page->view_form('web_proxy/lists', $data, lang('web_proxy_lists'));
     }
 }

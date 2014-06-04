@@ -124,6 +124,7 @@ class Squid extends Daemon
     const FILE_LANS_CONFIG = '/etc/squid/squid_lans.conf';
     const FILE_PORT_CONFIG = '/etc/squid/squid_http_port.conf';
     const FILE_HTTP_ACCESS_CONFIG = '/etc/squid/squid_http_access.conf';
+    const FILE_WHITELISTS_CONFIG = '/etc/squid/squid_whitelists.conf';
     const FILE_APP_CONFIG = '/etc/clearos/web_proxy.conf';
     const PATH_SPOOL = '/var/spool/squid';
     const PATH_TEMPLATES = '/var/clearos/web_proxy/errors';
@@ -183,6 +184,28 @@ class Squid extends Daemon
             $this->file_squid_unix_group = "/usr/$lib/squid/ext_unix_group_acl";
         else
             $this->file_squid_unix_group = "/usr/$lib/squid/squid_unix_group";
+    }
+
+    /**
+     * Add exception site.
+     *
+     * @param string $site site
+     *
+     * @return boolean FALSE if site already exists
+     * @throws Engine_Exception
+     */
+
+    public function add_exception_site($site)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        Validation_Exception::is_valid($this->validate_site($site));
+
+        $sites = $this->get_exception_sites();
+        $sites[] = $site;
+        sort($sites);
+
+        $this->_set_exception_sites($sites);
     }
 
     /**
@@ -414,6 +437,33 @@ class Squid extends Daemon
             $this->set_running_state(TRUE);
 
         $shell->execute('/bin/rm', '-rf ' . self::PATH_SPOOL . '/old', TRUE);
+    }
+
+    /**
+     * Delete exception site.
+     *
+     * @param string $site site
+     *
+     * @return void
+     * @throws Engine_Exception
+     */
+
+    public function delete_exception_site($site)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        Validation_Exception::is_valid($this->validate_site($site, FALSE));
+
+        $trimmed_sites = array();
+
+        $sites = $this->get_exception_sites();
+
+        foreach ($sites as $raw_site) {
+            if ($raw_site != $site)
+                $trimmed_sites[] = $raw_site;
+        }
+
+        $this->_set_exception_sites($trimmed_sites);
     }
 
     /**
@@ -741,6 +791,30 @@ class Squid extends Daemon
         );
 
         return $dow;
+    }
+
+    /**
+     * Returns method of identification mapping.
+     *
+     * @return array a mapping of ID types
+     */
+
+    public function get_exception_sites()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        $file = new File(self::FILE_WHITELISTS_CONFIG);
+
+        $lines = $file->get_contents_as_array();
+        $sites = array();
+
+        foreach ($lines as $line) {
+            $matches = array();
+            if (preg_match('/acl\s+whitelist_destination_domains\s+dstdomain\s+(.*)/', $line, $matches))
+                $sites[] = preg_replace('/^\./', '', $matches[1]);
+        }
+
+        return $sites;
     }
 
     /**
@@ -1423,6 +1497,47 @@ class Squid extends Daemon
     }
 
     /**
+     * Sets exception sites.
+     *
+     * @param array $sites exception sites
+     *
+     * @access private
+     * @return void
+     * @throws Engine_Exception
+     */
+
+    protected function _set_exception_sites($sites)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        $file = new File(self::FILE_WHITELISTS_CONFIG . ".tmp", TRUE);
+
+        if ($file->exists())
+            $file->delete();
+
+        $file->create('root', 'root', '0644');
+
+        if (empty($sites)) {
+            $lines = array();
+        } else {
+            $lines[] = "# Please specify one domain per line";
+            $lines[] = "# ACL definitions";
+
+            foreach ($sites as $site)
+                $lines[] = "acl whitelist_destination_domains dstdomain ." . $site;
+
+            $lines[] = '';
+            $lines[] = '# Access rule';
+            $lines[] = 'http_access allow whitelist_destination_domains';
+            $lines[] = 'http_access allow CONNECT whitelist_destination_domains';
+        }
+
+        $file->dump_contents_from_array($lines);
+
+        $file->move_to(self::FILE_WHITELISTS_CONFIG);
+    }
+
+    /**
      * Generic set routine.
      *
      * @param string $key     key name
@@ -1592,6 +1707,30 @@ class Squid extends Daemon
 
         if (!preg_match("/^([A-Za-z0-9\-\.\_]+)$/", $name))
             return lang('web_proxy_name_invalid');
+    }
+
+    /**
+     * Validation routine for site.
+     *
+     * @param string  $site             site
+     * @param boolean $check_uniqueness checks uniqueness
+     *
+     * @return string error message if site is invalid
+     */
+
+    public function validate_site($site, $check_uniqueness = TRUE)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        if (! Network_Utils::is_valid_domain($site, TRUE))
+            return lang('web_proxy_site_invalid');
+
+        if ($check_uniqueness) {
+            $current = $this->get_exception_sites();
+
+            if (in_array($site, $current))
+                return lang('web_proxy_site_already_exists');
+        }
     }
 
     /**

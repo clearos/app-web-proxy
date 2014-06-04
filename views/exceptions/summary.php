@@ -1,13 +1,13 @@
 <?php
 
 /**
- * Web site bypass view.
+ * Web proxy exception sites view.
  *
  * @category   apps
  * @package    web-proxy
  * @subpackage views
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2012 ClearFoundation
+ * @copyright  2014 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       http://www.clearfoundation.com/docs/developer/apps/web_proxy/
  */
@@ -33,8 +33,6 @@
 // Load dependencies
 ///////////////////////////////////////////////////////////////////////////////
 
-$this->lang->load('firewall');
-$this->lang->load('network');
 $this->lang->load('web_proxy');
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -42,8 +40,7 @@ $this->lang->load('web_proxy');
 ///////////////////////////////////////////////////////////////////////////////
 
 $headers = array(
-    lang('firewall_nickname'),
-    lang('network_address'),
+    lang('web_proxy_site'),
 );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -52,25 +49,21 @@ $headers = array(
 
 $anchors = array(
     anchor_custom('/app/web_proxy', lang('base_return_to_summary')),
-    anchor_add('/app/web_proxy/bypass/add')
+    anchor_add('/app/web_proxy/exceptions/add')
 );
 
 ///////////////////////////////////////////////////////////////////////////////
 // Items
 ///////////////////////////////////////////////////////////////////////////////
 
-foreach ($bypasses as $id => $details) {
-    // Deal with embedded / in network notation
-    $address = preg_replace('/\//', '-', $details['address']);
-
-    $item['title'] = $details['address'];
-    $item['action'] = '/app/web_proxy/bypass/edit/' . $address;
+foreach ($exceptions as $site) {
+    $item['title'] = $site;
+    $item['action'] = '/app/web_proxy/exceptions/edit/' . $site;
     $item['anchors'] = button_set(
-        array(anchor_delete('/app/web_proxy/bypass/delete/' . $address))
+        array(anchor_delete('/app/web_proxy/exceptions/delete/' . $site))
     );
     $item['details'] = array(
-        $details['name'],
-        $details['address']
+        $site
     );
 
     $items[] = $item;
@@ -83,7 +76,7 @@ sort($items);
 ///////////////////////////////////////////////////////////////////////////////
 
 echo summary_table(
-    lang('web_proxy_web_proxy_bypass'),
+    lang('web_proxy_exception_sites'),
     $anchors,
     $headers,
     $items

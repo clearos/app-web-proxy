@@ -1,13 +1,13 @@
 <?php
 
 /**
- * Web site bypass view.
+ * Web proxy exception sites add/edit view.
  *
  * @category   apps
  * @package    web-proxy
  * @subpackage views
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2012 ClearFoundation
+ * @copyright  2014 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       http://www.clearfoundation.com/docs/developer/apps/web_proxy/
  */
@@ -33,58 +33,47 @@
 // Load dependencies
 ///////////////////////////////////////////////////////////////////////////////
 
-$this->lang->load('firewall');
-$this->lang->load('network');
 $this->lang->load('web_proxy');
+$this->lang->load('network');
 
 ///////////////////////////////////////////////////////////////////////////////
-// Headers
+// Form handler
 ///////////////////////////////////////////////////////////////////////////////
 
-$headers = array(
-    lang('firewall_nickname'),
-    lang('network_address'),
-);
-
-///////////////////////////////////////////////////////////////////////////////
-// Anchors 
-///////////////////////////////////////////////////////////////////////////////
-
-$anchors = array(
-    anchor_custom('/app/web_proxy', lang('base_return_to_summary')),
-    anchor_add('/app/web_proxy/bypass/add')
-);
-
-///////////////////////////////////////////////////////////////////////////////
-// Items
-///////////////////////////////////////////////////////////////////////////////
-
-foreach ($bypasses as $id => $details) {
-    // Deal with embedded / in network notation
-    $address = preg_replace('/\//', '-', $details['address']);
-
-    $item['title'] = $details['address'];
-    $item['action'] = '/app/web_proxy/bypass/edit/' . $address;
-    $item['anchors'] = button_set(
-        array(anchor_delete('/app/web_proxy/bypass/delete/' . $address))
+if ($form_type === 'view') {
+    $read_only = TRUE;
+    $form_path = '/web_proxy/exceptions/view';
+    $buttons = array(
+        form_submit_add('submit'),
+        anchor_cancel('/app/web_proxy/exceptions')
     );
-    $item['details'] = array(
-        $details['name'],
-        $details['address']
+} else if ($form_type === 'add') {
+    $read_only = FALSE;
+    $form_path = '/web_proxy/exceptions/add';
+    $buttons = array(
+        form_submit_add('submit'),
+        anchor_cancel('/app/web_proxy/exceptions/')
     );
-
-    $items[] = $item;
+} else {
+    $read_only = FALSE;
+    $form_path = '/web_proxy/exceptions/edit';
+    $buttons = array(
+        form_submit_update('submit'),
+        anchor_cancel('/app/web_proxy/exceptions/'),
+        anchor_delete('/app/web_proxy/exceptions/delete/' . $interface)
+    );
 }
 
-sort($items);
-
 ///////////////////////////////////////////////////////////////////////////////
-// Summary table
+// Form
 ///////////////////////////////////////////////////////////////////////////////
 
-echo summary_table(
-    lang('web_proxy_web_proxy_bypass'),
-    $anchors,
-    $headers,
-    $items
-);
+echo form_open($form_path);
+echo form_header(lang('web_proxy_exception_sites'));
+
+echo field_input('site', $site, lang('web_proxy_site'), $read_only);
+
+echo field_button_set($buttons);
+
+echo form_footer();
+echo form_close();

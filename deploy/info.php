@@ -103,6 +103,11 @@ $app['core_file_manifest'] = array(
         'config' => TRUE,
         'config_params' => 'noreplace',
     ),
+    'squid_whitelists.conf' => array(
+        'target' => '/etc/squid/squid_whitelists.conf',
+        'config' => TRUE,
+        'config_params' => 'noreplace',
+    ),
     'web_proxy.conf' => array (
         'target' => '/etc/clearos/web_proxy.conf',
         'config' => TRUE,
