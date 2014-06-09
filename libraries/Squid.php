@@ -1293,7 +1293,7 @@ class Squid extends Daemon
 
         $file = new File(self::FILE_ACLS_CONFIG, TRUE);
 
-        $file->delete_lines("/acl cleargroup-$name\s+.*/", $replacement);
+        $file->delete_lines("/acl cleargroup-$name\s+.*/");
 
         if (strlen($addgroup) > 0) {
             // Group based
