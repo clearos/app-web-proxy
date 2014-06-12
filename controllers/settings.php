@@ -96,6 +96,9 @@ class Settings extends ClearOS_Controller
                 $this->squid->set_cache_size($this->input->post('cache'));
                 $this->squid->set_maximum_object_size($this->input->post('object'));
                 $this->squid->set_maximum_file_download_size($this->input->post('download'));
+                $this->squid->set_youtube_edu(
+                    $this->input->post('youtube_edu_enable'),
+                    $this->input->post('youtube_edu_id'));
 
                 $this->squid->reset(TRUE);
 
@@ -117,6 +120,8 @@ class Settings extends ClearOS_Controller
             $data['object'] = $this->squid->get_maximum_object_size();
             $data['download'] = $this->squid->get_maximum_file_download_size();
             $data['levels'] = $this->tuning->get_levels();
+            $data['youtube_edu_enable'] = $this->squid->get_youtube_edu_enabled();
+            $data['youtube_edu_id'] = $this->squid->get_youtube_edu_id();
 
             $tuning = $this->squid->get_tuning();
             $data['level'] = $tuning['level'];
@@ -254,3 +259,5 @@ class Settings extends ClearOS_Controller
         }
     }
 }
+
+// vi: expandtab shiftwidth=4 softtabstop=4 tabstop=4

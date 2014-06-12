@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 $app['basename'] = 'web_proxy';
-$app['version'] = '1.6.2';
+$app['version'] = '1.6.3';
 $app['release'] = '1';
 $app['vendor'] = 'ClearFoundation';
 $app['packager'] = 'ClearFoundation';
@@ -48,7 +48,8 @@ $app['core_requires'] = array(
     'app-samba-common-core',
     'app-storage-core >= 1:1.4.7',
     'samba-winbind',
-    'squid >= 3.1.10',
+    'squid >= 3.1.10-20',
+    'clearos-ecap-adapter',
 );
 
 $app['core_directory_manifest'] = array(

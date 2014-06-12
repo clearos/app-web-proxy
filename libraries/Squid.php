@@ -123,6 +123,8 @@ class Squid extends Daemon
     const FILE_AUTH_CONFIG = '/etc/squid/squid_auth.conf';
     const FILE_LANS_CONFIG = '/etc/squid/squid_lans.conf';
     const FILE_PORT_CONFIG = '/etc/squid/squid_http_port.conf';
+    const FILE_ECAP_SQUID_CONFIG = '/etc/squid/squid_ecap.conf';
+    const FILE_ECAP_XML_CONFIG = '/etc/clearos/ecap-adapter.conf';
     const FILE_HTTP_ACCESS_CONFIG = '/etc/squid/squid_http_access.conf';
     const FILE_WHITELISTS_CONFIG = '/etc/squid/squid_whitelists.conf';
     const FILE_APP_CONFIG = '/etc/clearos/web_proxy.conf';
@@ -1015,6 +1017,49 @@ class Squid extends Daemon
     }
 
     /**
+     * Returns TRUE if the YouTube EDU header is enabled.
+     *
+     * @return boolean TRUE if YouTube EDU is enabled.
+     * @throws Engine_Exception
+     */
+
+    public function get_youtube_edu_enabled()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        $file = new File(self::FILE_ECAP_SQUID_CONFIG, TRUE);
+
+        $value = trim($file->lookup_value("/^ecap_enable\s*/i"));
+
+        return (preg_match('/off/', $value) ? FALSE : TRUE);
+    }
+
+    /**
+     * Returns the YouTube EDU ID.
+     *
+     * @return string YouTube EDU ID
+     * @throws Engine_Exception
+     */
+
+    public function get_youtube_edu_id()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        $file = new File(self::FILE_ECAP_XML_CONFIG, TRUE);
+        $xml_source = $file->get_contents();
+
+        $xml = simplexml_load_string($xml_source);
+        if ($xml === FALSE) return '';
+
+        foreach ($xml->header as $i => $hdr) {
+            if ($hdr['name'] != 'X-YouTube-Edu-Filter') continue;
+            return $xml->header[0];
+        }
+
+        return '';
+    }
+
+    /**
      * Runs clear cache.
      *
      * @param boolean $background background flag
@@ -1349,6 +1394,7 @@ class Squid extends Daemon
         // Validate
         // --------
         Validation_Exception::is_valid($this->validate_name($name));
+
         // Check for existing
         if (!$update) {
             $times = $this->get_time_definition_list();
@@ -1383,6 +1429,64 @@ class Squid extends Daemon
 
         $this->is_loaded = FALSE;
         $this->config = array();
+    }
+
+    /**
+     * Enables/disables YouTube EDU ID
+     *
+     * @param string  $enable enable/disable YouTube EDU ID header
+     * @param array   $id     YouTube EDU ID
+     *
+     * @return void
+     * @throws Engine_Exception, Validation_Exception
+     */
+
+    public function set_youtube_edu($enable, $id)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        if ($enable) {
+            Validation_Exception::is_valid($this->validate_youtube_edu_id($id));
+
+            $this->_delete_parameter('acl youtube dstdomain .youtube.com', self::FILE_ACLS_CONFIG);
+        
+            $file = new File(self::FILE_ACLS_CONFIG, TRUE);
+
+            $file->delete_lines("/acl youtube dstdomain\s+.*/");
+            $file->add_lines("acl youtube dstdomain .youtube.com\n");
+
+            $ecap_enable = 'ecap_enable on';
+        }
+        else {
+            try {
+                $this->_delete_parameter('acl youtube dstdomain .youtube.com', self::FILE_ACLS_CONFIG);
+            } catch (Exception $e) {
+                // Ignore
+            }
+
+            $ecap_enable = 'ecap_enable off';
+        }
+
+        $file = new File(self::FILE_ECAP_SQUID_CONFIG, TRUE);
+
+        $file->replace_one_line("/^ecap_enable\s*/i", "$ecap_enable\n");
+
+        if (strlen($id)) {
+            $file = new File(self::FILE_ECAP_XML_CONFIG, TRUE);
+            $xml_source = $file->get_contents();
+
+            $xml = simplexml_load_string($xml_source);
+            if ($xml === FALSE) return;
+
+            foreach ($xml->header as $i => $hdr) {
+                if ($hdr['name'] != 'X-YouTube-Edu-Filter') continue;
+                $xml->header[0] = $id;
+                break;
+            }
+
+            $file->delete_lines('/.*/');
+            $file->add_lines($xml->asXML());
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1763,4 +1867,21 @@ class Squid extends Daemon
         if ((int)$time < 0)
             return lang('web_proxy_time_definition_invalid');
     }
+
+    /**
+     * Validation routine for YouTube EDU ID.
+     *
+     * @param string $id YouTube EDU ID.
+     *
+     * @return boolean
+     */
+
+    public function validate_youtube_edu_id($id)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+        if (!strlen($id))
+            return lang('web_proxy_youtube_id_invalid');
+    }
 }
+
+// vi: expandtab shiftwidth=4 softtabstop=4 tabstop=4

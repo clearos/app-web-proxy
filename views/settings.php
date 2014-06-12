@@ -72,7 +72,14 @@ echo fieldset_header(lang('base_tuning'));
 echo field_dropdown('levels', $levels, $level, lang('base_performance_level'), TRUE);
 echo fieldset_footer();
 
+echo fieldset_header(lang('web_proxy_youtube_for_schools'));
+echo field_toggle_enable_disable('youtube_edu_enable', $youtube_edu_enable, lang('web_proxy_youtube_for_schools'), $read_only);
+echo field_input('youtube_edu_id', $youtube_edu_id, lang('web_proxy_youtube_id'), $read_only);
+echo fieldset_footer();
+
 echo field_button_set($buttons);
 
 echo form_footer(); 
 echo form_close();
+
+// vi: expandtab shiftwidth=4 softtabstop=4 tabstop=4

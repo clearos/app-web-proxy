@@ -1,7 +1,7 @@
 
 Name: app-web-proxy
 Epoch: 1
-Version: 1.6.2
+Version: 1.6.3
 Release: 1%{dist}
 Summary: Web Proxy
 License: GPLv3
@@ -28,7 +28,8 @@ Requires: app-web-proxy-plugin-core
 Requires: app-samba-common-core
 Requires: app-storage-core >= 1:1.4.7
 Requires: samba-winbind
-Requires: squid >= 3.1.10
+Requires: squid >= 3.1.10-20
+Requires: clearos-ecap-adapter
 
 %description core
 The Web Proxy app acts as an intermediary for web requests originating from your network.  Implementing the proxy server improves page access times, decreases bandwidth use, and provides site visit audits by user and IP address.
