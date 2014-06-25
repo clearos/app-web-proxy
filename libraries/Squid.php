@@ -1456,14 +1456,9 @@ class Squid extends Daemon
             $file->add_lines("acl youtube dstdomain .youtube.com\n");
 
             $ecap_enable = 'ecap_enable on';
-        }
-        else {
-            try {
-                $this->_delete_parameter('acl youtube dstdomain .youtube.com', self::FILE_ACLS_CONFIG);
-            } catch (Exception $e) {
-                // Ignore
-            }
-
+        } else {
+            // Leave alone or Squid freaks out
+            // $this->_delete_parameter('acl youtube dstdomain .youtube.com', self::FILE_ACLS_CONFIG);
             $ecap_enable = 'ecap_enable off';
         }
 
