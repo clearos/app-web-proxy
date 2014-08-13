@@ -22,6 +22,7 @@ $lang['web_proxy_maximum_file_download_size'] = 'Maximal storlek på fil som lad
 $lang['web_proxy_maximum_object_size'] = 'Maximal storlek på objekt';
 $lang['web_proxy_mode'] = 'Mod';
 $lang['web_proxy_name_invalid'] = 'Namnet är ogiltigt.';
+$lang['web_proxy_name_longer_than_20'] = 'Name must be 20 characters or less.';
 $lang['web_proxy_non_transaprent_Without_user_authentication'] = 'Icketransparent + ingen användarautenticiering';
 $lang['web_proxy_non_transparent_with_user_authentication'] = 'Icketransparent + användarautenticiering';
 $lang['web_proxy_non_transparent_with_user_authentication_and_ntlm'] = 'Icketransparent + användarautenticiering + NTLM';

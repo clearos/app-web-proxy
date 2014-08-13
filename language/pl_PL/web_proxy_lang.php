@@ -22,6 +22,7 @@ $lang['web_proxy_maximum_file_download_size'] = 'Maksymalny rozmiar pobieranego 
 $lang['web_proxy_maximum_object_size'] = 'Maksymalny rozmiar obiektu';
 $lang['web_proxy_mode'] = 'Tryb';
 $lang['web_proxy_name_invalid'] = 'Podana nazwa jest nieprawidłowa.';
+$lang['web_proxy_name_longer_than_20'] = 'Name must be 20 characters or less.';
 $lang['web_proxy_non_transaprent_Without_user_authentication'] = 'Nie przeźroczysty + brak autoryzacji użytkownika';
 $lang['web_proxy_non_transparent_with_user_authentication'] = 'Nie przeźroczysty + autoryzacja użytkownika';
 $lang['web_proxy_non_transparent_with_user_authentication_and_ntlm'] = 'Nie przeźroczysty + autoryzacja użytkownika + NTLM';

@@ -1806,6 +1806,10 @@ class Squid extends Daemon
 
         if (!preg_match("/^([A-Za-z0-9\-\.\_]+)$/", $name))
             return lang('web_proxy_name_invalid');
+        // REF: http://wiki.squid-cache.org/SquidFaq/SquidAcl#Maximum_length_of_an_acl_name
+        // Plus padding for prefixes like 'cleargroup-'
+        if (strlen($name) > 20)
+            return lang('web_proxy_name_longer_than_20');
     }
 
     /**
