@@ -23,4 +23,4 @@ chmod 640 /etc/squid/squid.conf
 #----------------
 
 logger -p local6.notice -t installer "app-web-proxy-core - disabling web proxy server"
-/sbin/chkconfig squid off
+/sbin/chkconfig squid off >/dev/null 2>&1
