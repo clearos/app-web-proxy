@@ -1125,18 +1125,12 @@ class Squid extends Daemon
         else
             $children = $tuning['children'];
 
-        // Basic authentication
-        //---------------------
+        // Open configuration
+        //-------------------
 
         $file = new File(self::FILE_AUTH_CONFIG);
 
         $lines = "# This file is managed by the ClearOS API.  Use squid.conf for customization.\n";
-        $lines .= "auth_param basic children $children\n";
-        $lines .= "auth_param basic realm $realm\n";
-        $lines .= "auth_param basic credentialsttl 2 hours\n";
-        $lines .= "auth_param basic program $this->file_pam_auth\n";
-        // TODO - IPv4 hack below
-        $lines .= "external_acl_type system_group ipv4 %LOGIN $this->file_squid_unix_group -p\n";
 
         // Add NTLM if desired and possible
         //---------------------------------
@@ -1156,6 +1150,17 @@ class Squid extends Daemon
                 $lines .= "auth_param ntlm keep_alive on\n";
             }
         }
+
+        // Basic authentication
+        //---------------------
+
+        $lines .= "# Basic\n";
+        $lines .= "auth_param basic children $children\n";
+        $lines .= "auth_param basic realm $realm\n";
+        $lines .= "auth_param basic credentialsttl 2 hours\n";
+        $lines .= "auth_param basic program $this->file_pam_auth\n";
+        // TODO - IPv4 hack below
+        $lines .= "external_acl_type system_group ipv4 %LOGIN $this->file_squid_unix_group -p\n";
 
         if ($file->exists()) 
             $file->delete();
