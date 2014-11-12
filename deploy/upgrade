@@ -122,6 +122,15 @@ if [ -z "$CHECK" ]; then
     echo "include /etc/squid/squid_ecap.conf" >> /etc/squid/squid.conf
 fi
 
+# Add YouTube
+#------------
+
+CHECK=`grep "acl youtube dstdomain .youtube.com" /etc/squid/squid_acls.conf`
+if [ -z "$CHECK" ]; then
+    logger -p local6.notice -t installer "app-web-proxy-core - adding YouTube definition"
+    echo "acl youtube dstdomain .youtube.com" >> /etc/squid/squid_acls.conf
+fi
+
 # Run network configuration event on install/upgrade
 #---------------------------------------------------
 
