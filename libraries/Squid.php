@@ -60,7 +60,7 @@ clearos_load_language('network');
 use \clearos\apps\base\Daemon as Daemon;
 use \clearos\apps\base\File as File;
 use \clearos\apps\base\Folder as Folder;
-use \clearos\apps\base\Product as Product;
+use \clearos\apps\base\OS as OS;
 use \clearos\apps\base\Shell as Shell;
 use \clearos\apps\base\Tuning as Tuning;
 use \clearos\apps\network\Iface_Manager as Iface_Manager;
@@ -72,7 +72,7 @@ use \clearos\apps\web_proxy\Squid_Firewall as Squid_Firewall;
 clearos_load_library('base/Daemon');
 clearos_load_library('base/File');
 clearos_load_library('base/Folder');
-clearos_load_library('base/Product');
+clearos_load_library('base/OS');
 clearos_load_library('base/Shell');
 clearos_load_library('base/Tuning');
 clearos_load_library('network/Iface_Manager');
@@ -1113,8 +1113,8 @@ class Squid extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        $product = new Product();
-        $name = $product->get_name();
+        $os = new OS();
+        $name = $os->get_name();
         $realm = $name . ' - ' . lang('web_proxy_web_proxy');
 
         $tuning = $this->get_tuning();

@@ -1,9 +1,9 @@
 
 Name: app-web-proxy
 Epoch: 1
-Version: 2.0.5
+Version: 2.0.14
 Release: 1%{dist}
-Summary: Web Proxy
+Summary: Web Proxy Server
 License: GPLv3
 Group: ClearOS/Apps
 Source: %{name}-%{version}.tar.gz
@@ -13,10 +13,10 @@ Requires: app-base
 Requires: app-network
 
 %description
-The Web Proxy app acts as an intermediary for web requests originating from your network.  Implementing the proxy server improves page access times, decreases bandwidth use, and provides site visit audits by user and IP address.
+The Web Proxy Server app acts as an intermediary for web requests originating from your network.  Implementing the proxy server improves page access times, decreases bandwidth use, and provides site visit audits by user and IP address.
 
 %package core
-Summary: Web Proxy - Core
+Summary: Web Proxy Server - Core
 License: LGPLv3
 Group: ClearOS/Libraries
 Requires: app-base-core
@@ -32,7 +32,7 @@ Requires: squid >= 3.1.10-20
 Requires: clearos-ecap-adapter
 
 %description core
-The Web Proxy app acts as an intermediary for web requests originating from your network.  Implementing the proxy server improves page access times, decreases bandwidth use, and provides site visit audits by user and IP address.
+The Web Proxy Server app acts as an intermediary for web requests originating from your network.  Implementing the proxy server improves page access times, decreases bandwidth use, and provides site visit audits by user and IP address.
 
 This package provides the core API and libraries.
 
