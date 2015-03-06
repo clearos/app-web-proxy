@@ -277,8 +277,11 @@ class Squid extends Daemon
 
         $transparent = ($is_firewall_transparent && !$is_standalone && !$is_proxy_filter_running) ? ' intercept' : '';
 
-        if (! in_array('127.0.0.1', $ips))
-            array_unshift($ips, '127.0.0.1');
+        if (! in_array('localhost4', $ips))
+            array_unshift($ips, 'localhost4');
+
+        if (! in_array('localhost6', $ips))
+            array_unshift($ips, 'localhost6');
 
         $current_lines = '';
         $new_lines = "# Created automatically based on network configuration\n";
