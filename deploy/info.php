@@ -119,5 +119,8 @@ $app['core_file_manifest'] = array(
 $app['delete_dependency'] = array(
     'app-web-proxy-core',
     'app-web-proxy-plugin-core',
+    'app-web-access-control-core',
+    'app-web-access-control',
+    'clearos-ecap-adapter',
     'squid'
 );
