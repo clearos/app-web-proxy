@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 $app['basename'] = 'web_proxy';
-$app['version'] = '2.0.18';
+$app['version'] = '2.0.21';
 $app['release'] = '1';
 $app['vendor'] = 'ClearFoundation';
 $app['packager'] = 'ClearFoundation';
@@ -28,8 +28,6 @@ $app['subcategory'] = lang('base_subcategory_content_filter_and_proxy');
 $app['controllers']['web_proxy']['title'] = lang('web_proxy_app_name');
 $app['controllers']['authentication']['title'] = lang('web_proxy_authentication');
 $app['controllers']['settings']['title'] = lang('base_settings');
-$app['controllers']['policy']['title'] = lang('base_app_policy');
-$app['controllers']['bypass']['title'] = lang('web_proxy_web_proxy_bypass');
 
 /////////////////////////////////////////////////////////////////////////////
 // Packaging
