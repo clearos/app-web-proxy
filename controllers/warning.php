@@ -96,6 +96,9 @@ class Warning extends ClearOS_Controller
         if (preg_match('/(unknown|nothing)/i', $data['ip']))
             $data['ip'] = '...';
 
+        if (strlen($data['url']) > 45)
+            $data['url'] = substr($data['url'], 0, 45) . '...';
+
         // Load views
         //-----------
 
