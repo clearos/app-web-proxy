@@ -286,8 +286,12 @@ class Squid extends Daemon
         $current_lines = '';
         $new_lines = "# Created automatically based on network configuration\n";
 
-        foreach ($ips as $ip)
-            $new_lines .= "http_port $ip:3128$transparent\n";
+        foreach ($ips as $ip) {
+            if (preg_match('/^localhost/', $ip))
+                $new_lines .= "http_port $ip:3128\n";
+            else
+                $new_lines .= "http_port $ip:3128$transparent\n";
+        }
 
         $file = new File(self::FILE_PORT_CONFIG);
 
