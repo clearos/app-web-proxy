@@ -4,8 +4,8 @@
 
 $lang['web_proxy_access_control_list_exists'] = 'Список контроля доступа уже существует.';
 $lang['web_proxy_allow'] = 'Разрешить';
-$lang['web_proxy_app_description'] = 'Приложение "Веб прокси" выступает в качестве посредника для веб-запросов, поступающих из сети. Реализация прокси-сервер улучшает время доступа страницы, уменьшает использование полосы пропускания и обеспечивает проверку поситителей сайта по IP.';
-$lang['web_proxy_app_name'] = 'Веб Прокси';
+$lang['web_proxy_app_description'] = 'The Web Proxy Server app acts as an intermediary for web requests originating from your network.  Implementing the proxy server improves page access times, decreases bandwidth use, and provides site visit audits by user and IP address.';
+$lang['web_proxy_app_name'] = 'Web Proxy Server';
 $lang['web_proxy_authentication'] = 'Аутентификация';
 $lang['web_proxy_bypass'] = 'Bypass';
 $lang['web_proxy_cache'] = 'Кэш';

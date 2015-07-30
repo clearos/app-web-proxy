@@ -4,8 +4,8 @@
 
 $lang['web_proxy_access_control_list_exists'] = 'Access control list already exists.';
 $lang['web_proxy_allow'] = 'Allow';
-$lang['web_proxy_app_description'] = 'The Web Proxy app acts as an intermediary for web requests originating from your network.  Implementing the proxy server improves page access times, decreases bandwidth use, and provides site visit audits by user and IP address.';
-$lang['web_proxy_app_name'] = 'Web Proxy';
+$lang['web_proxy_app_description'] = 'The Web Proxy Server app acts as an intermediary for web requests originating from your network.  Implementing the proxy server improves page access times, decreases bandwidth use, and provides site visit audits by user and IP address.';
+$lang['web_proxy_app_name'] = 'Web Proxy Server';
 $lang['web_proxy_authentication'] = 'Authentication';
 $lang['web_proxy_bypass'] = 'Bypass';
 $lang['web_proxy_cache'] = 'Cache';
@@ -82,7 +82,7 @@ $lang['web_proxy_warning_user_no_access'] = 'Username-based authentication is no
 $lang['web_proxy_warning_write_error'] = 'Network write error occurred';
 $lang['web_proxy_warning_zero_size_object'] = 'No data was received for your request - web server might be overloaded';
 $lang['web_proxy_web_address'] = 'Web Address';
-$lang['web_proxy_web_proxy'] = 'Web Proxy';
+$lang['web_proxy_web_proxy'] = 'Web Proxy Server';
 $lang['web_proxy_web_proxy_bypass'] = 'Web Proxy Bypass';
 $lang['web_proxy_web_proxy_configuration'] = 'Web Proxy Configuration';
 $lang['web_proxy_web_proxy_storage'] = 'Web Proxy Storage';

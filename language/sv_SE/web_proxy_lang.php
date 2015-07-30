@@ -4,8 +4,8 @@
 
 $lang['web_proxy_access_control_list_exists'] = 'Lista för åtkomstkontroll finns redan.';
 $lang['web_proxy_allow'] = 'Tillåt';
-$lang['web_proxy_app_description'] = 'Webbproxyn fungerar som en mellanlagringsplats för webbegäran som kommer från ditt nätverk.  Genom att använda proxyservern så minskas åtkomsttiden för sidor, bandbredden minskas och ger möjlighet till granskning av besök på webbplatser som användare eller IP-adress gjort.';
-$lang['web_proxy_app_name'] = 'Webbproxy';
+$lang['web_proxy_app_description'] = 'The Web Proxy Server app acts as an intermediary for web requests originating from your network.  Implementing the proxy server improves page access times, decreases bandwidth use, and provides site visit audits by user and IP address.';
+$lang['web_proxy_app_name'] = 'Web Proxy Server';
 $lang['web_proxy_authentication'] = 'Authentication';
 $lang['web_proxy_bypass'] = 'Bypass';
 $lang['web_proxy_cache'] = 'Cache';
