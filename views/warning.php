@@ -43,7 +43,7 @@ $this->lang->load('network');
 echo form_open('web_proxy/warning');
 echo form_header(lang('web_proxy_web_proxy'));
 
-echo field_view(lang('base_status'), $message, 'warning');
+echo field_view(lang('web_proxy_web_site_status'), $message, 'warning');
 echo field_view(lang('web_proxy_web_address'), $url, 'web_address');
 echo field_view(lang('network_ip'), $ip, 'ip');
 echo field_view(lang('web_proxy_internet_connection_status'), loading(), 'status');
