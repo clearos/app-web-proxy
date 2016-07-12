@@ -139,7 +139,7 @@ class Warning extends ClearOS_Controller
         $is_trusted_standalone = ($mode == Network::MODE_TRUSTED_STANDALONE) ? TRUE : FALSE;
 
         // This algorithm mimics how the firewall behaves.
-        // Check /etc/rc.d/firewall.lua for details.
+        // Check firewall.lua for details.
         $data['port'] = '...';
 
         if ($is_standalone || $is_trusted_standalone) {
