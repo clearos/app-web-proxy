@@ -63,6 +63,6 @@ class Lists extends ClearOS_Controller
         // Load the views
         //---------------
 
-        $this->page->view_form('web_proxy/lists', $data, lang('web_proxy_lists'));
+        $this->page->view_form('web_proxy/lists', $data, lang('web_proxy_rules'));
     }
 }
