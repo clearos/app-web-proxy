@@ -1,7 +1,7 @@
 
 Name: app-web-proxy
 Epoch: 1
-Version: 2.3.1
+Version: 2.3.2
 Release: 1%{dist}
 Summary: Web Proxy Server
 License: GPLv3
